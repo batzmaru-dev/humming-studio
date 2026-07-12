@@ -1,4 +1,5 @@
 import { json, error } from '@sveltejs/kit';
+import { del } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
 import { requireAuth } from '$lib/server/session';
 import { verifyProSubscription } from '$lib/server/appstore';
@@ -47,9 +48,13 @@ export async function POST({ request }) {
 		throw error(400, 'audioURL must be a Humming Studio upload');
 	}
 
-	// Pro サブスクリプションの検証(Apple 署名の JWS)
-	const reason = await verifyProSubscription(body.transactionJWS);
-	if (reason) throw error(403, `Pro サブスクリプションが必要です(${reason})`);
+	// Pro サブスクリプションの検証(Apple 署名の JWS)。
+	// AI_FREE_SUBS(カンマ区切りの sub)はサブスク審査前の動作確認用バイパス
+	const freeSubs = (env.AI_FREE_SUBS ?? '').split(',').filter(Boolean);
+	if (!freeSubs.includes(sub)) {
+		const reason = await verifyProSubscription(body.transactionJWS);
+		if (reason) throw error(403, `Pro サブスクリプションが必要です(${reason})`);
+	}
 
 	// 月間上限
 	const used = await getTranscriptionUsage(sub);
@@ -88,9 +93,15 @@ export async function POST({ request }) {
 	if (!openaiRes.ok) {
 		const detail = await openaiRes.text().catch(() => '');
 		console.error('openai transcription failed', openaiRes.status, detail.slice(0, 500));
+		if (detail.includes('billing_not_active')) {
+			throw error(503, 'AI 文字起こしは準備中です(プロバイダの課金設定待ち)');
+		}
 		throw error(502, '文字起こしに失敗しました。時間をおいて再度お試しください');
 	}
 	const result = await openaiRes.json();
+
+	// 文字起こし用の一時チャンクは使い終わったら消す(ベストエフォート)
+	del(body.audioURL).catch(() => {});
 
 	// メータリング(whisper の実測 duration があれば優先)
 	const measured = Number(result.duration) || durationSec;

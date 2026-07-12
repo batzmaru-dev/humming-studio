@@ -17,7 +17,7 @@ export const config = { maxDuration: 60 };
  * 返り値: { groups: [{ title: string, blockIndexes: number[] }] }
  */
 export async function POST({ request }) {
-	await requireAuth(request);
+	const sub = await requireAuth(request);
 	if (!env.ANTHROPIC_API_KEY) throw error(503, 'AI トピック抽出は準備中です');
 
 	const body = await request.json().catch(() => null);
@@ -27,8 +27,12 @@ export async function POST({ request }) {
 		throw error(400, 'blocks is required');
 	if (body.blocks.length > 500) throw error(400, 'too many blocks (max 500)');
 
-	const reason = await verifyProSubscription(body.transactionJWS);
-	if (reason) throw error(403, `Pro サブスクリプションが必要です(${reason})`);
+	// AI_FREE_SUBS はサブスク審査前の動作確認用バイパス
+	const freeSubs = (env.AI_FREE_SUBS ?? '').split(',').filter(Boolean);
+	if (!freeSubs.includes(sub)) {
+		const reason = await verifyProSubscription(body.transactionJWS);
+		if (reason) throw error(403, `Pro サブスクリプションが必要です(${reason})`);
+	}
 
 	const transcript = body.blocks
 		.filter((b: { index?: unknown; text?: unknown }) =>
