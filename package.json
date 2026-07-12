@@ -1,0 +1,22 @@
+{
+  "name": "humming-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@skeletonlabs/skeleton": "^4.15.2",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.69.2",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@tailwindcss/vite": "^4.3.2",
+    "svelte": "^5.56.4",
+    "tailwindcss": "^4.3.2",
+    "vite": "^8.1.4"
+  }
+}

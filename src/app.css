@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton/themes/pine';
+@plugin '@tailwindcss/typography';
+
+/* ダークモード固定(texpile 風のダークファースト) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* pine テーマはセリフ体既定 → 日本語向けにサンセリフへ上書き。
+   primary は pine の金茶ではなくアイコンのリーフグリーンに合わせる */
+[data-theme='pine'] {
+	--base-font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
+		system-ui, sans-serif;
+	--heading-font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
+		system-ui, sans-serif;
+	--heading-font-weight: 700;
+
+	--color-primary-50: oklch(96% 0.03 156deg);
+	--color-primary-100: oklch(92% 0.06 156deg);
+	--color-primary-200: oklch(86% 0.1 156deg);
+	--color-primary-300: oklch(79% 0.13 156deg);
+	--color-primary-400: oklch(72% 0.15 156deg);
+	--color-primary-500: oklch(64% 0.15 156deg);
+	--color-primary-600: oklch(56% 0.13 157deg);
+	--color-primary-700: oklch(48% 0.11 158deg);
+	--color-primary-800: oklch(40% 0.09 159deg);
+	--color-primary-900: oklch(33% 0.07 160deg);
+	--color-primary-950: oklch(25% 0.05 161deg);
+	--color-primary-contrast-dark: var(--color-primary-950);
+	--heading-font-color-dark: var(--color-primary-300);
+	--anchor-font-color-dark: var(--color-primary-300);
+}
+
+html {
+	scroll-behavior: smooth;
+}
