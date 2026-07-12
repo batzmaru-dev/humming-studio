@@ -183,7 +183,7 @@
 	<div class="mx-auto max-w-3xl px-6 py-20 text-center">
 		<h2 class="text-3xl font-bold">ベータテスター募集中</h2>
 		<p class="mt-4 text-surface-300">
-			iPad(iPadOS 17 以降)でお使いいただけるテスターを募集しています(無料)。<br />
+			iPad(iPadOS 17 以降)と Mac(macOS 14 以降)のテスターを募集しています(無料)。<br />
 			TestFlight アプリをインストールして、下のリンクから参加してください。
 		</p>
 		<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
