@@ -21,6 +21,8 @@ export interface Episode {
 	pubDate: string; // ISO8601
 	chapters: Chapter[];
 	status: 'published' | 'takedown';
+	/** RSS インポート由来(音源は外部ホスティングを参照。ストレージ計上・Blob削除の対象外) */
+	external?: boolean;
 }
 
 export interface Show {
