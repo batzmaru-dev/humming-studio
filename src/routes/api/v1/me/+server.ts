@@ -17,6 +17,7 @@ export async function GET({ request }) {
 			title: s.title,
 			episodeCount: s.episodes.filter((e) => e.status === 'published').length,
 			radioKeizaiOptIn: s.radioKeizaiOptIn,
+			artworkURL: s.artworkURL ?? null,
 			feedURL: `https://humming-studio.com/feed/${s.slug}.xml`,
 			role: s.ownerSub === sub ? 'owner' : 'member'
 		}))

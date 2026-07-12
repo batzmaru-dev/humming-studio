@@ -10,7 +10,8 @@ export async function DELETE({ request, params }) {
 	const show = await getShow(params.slug);
 	if (!show) throw error(404, 'show not found');
 
-	const target = params.sub;
+	// "me" は本人(離脱)として解決する
+	const target = params.sub === 'me' ? sub : params.sub;
 	const isOwner = show.ownerSub === sub;
 	if (!isOwner && target !== sub) throw error(403, 'not allowed');
 	if (target === show.ownerSub) throw error(400, 'owner cannot be removed');
