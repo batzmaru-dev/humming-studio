@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { del } from '@vercel/blob';
 import { requireAuth } from '$lib/server/session';
-import { getShow, saveShow, getOrCreateUser, saveUser } from '$lib/server/store';
+import { getShow, saveShow, getOrCreateUser, saveUser, canPublish } from '$lib/server/store';
 
 export const prerender = false;
 
@@ -10,16 +10,17 @@ export async function DELETE({ request, params }) {
 	const sub = await requireAuth(request);
 	const show = await getShow(params.slug);
 	if (!show) throw error(404, 'show not found');
-	if (show.ownerSub !== sub) throw error(403, 'not your show');
+	if (!canPublish(show, sub)) throw error(403, 'not a member of this show');
 
 	const index = show.episodes.findIndex((e) => e.id === params.id);
 	if (index < 0) throw error(404, 'episode not found');
 	const [episode] = show.episodes.splice(index, 1);
 	await saveShow(show);
 
-	// RSS インポート由来のエピソードは外部音源参照なので、ストレージ計上も Blob 削除もしない
+	// RSS インポート由来のエピソードは外部音源参照なので、ストレージ計上も Blob 削除もしない。
+	// 計上先は公開時と同じく番組オーナー
 	if (!episode.external) {
-		const user = await getOrCreateUser(sub);
+		const user = await getOrCreateUser(show.ownerSub);
 		user.storageUsed = Math.max(0, user.storageUsed - episode.bytes);
 		await saveUser(user);
 

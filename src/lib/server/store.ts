@@ -1,4 +1,4 @@
-import { put, head } from '@vercel/blob';
+import { put, head, del } from '@vercel/blob';
 
 // Vercel Blob を JSON ドキュメントストアとして使う(ベータ規模向け。
 // 同一ドキュメントへの同時書き込みは last-write-wins — GA では Postgres へ移行予定)。
@@ -38,6 +38,13 @@ export interface Show {
 	radioKeizaiOptIn: boolean;
 	createdAt: string;
 	episodes: Episode[];
+	/** チームメンバー(オーナー以外の sub)。エピソードの公開・削除ができる */
+	members?: string[];
+}
+
+/** 番組メタデータの編集・チーム管理はオーナーのみ、エピソード操作はメンバーも可 */
+export function canPublish(show: Show, sub: string): boolean {
+	return show.ownerSub === sub || (show.members ?? []).includes(sub);
 }
 
 export interface User {
@@ -117,3 +124,34 @@ export async function addShowToIndex(slug: string): Promise<void> {
 }
 
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38})[a-z0-9]$/;
+
+// --- チーム招待コード(code → slug の対応。参加時に消費する一回限り) ---
+
+interface Invite {
+	slug: string;
+	createdAt: string;
+}
+
+export async function createInvite(slug: string): Promise<string> {
+	// 紛らわしい文字を除いた 8 文字コード
+	const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+	const bytes = crypto.getRandomValues(new Uint8Array(8));
+	const code = [...bytes].map((b) => alphabet[b % alphabet.length]).join('');
+	await writeJSON(`data/invites/${code}.json`, {
+		slug,
+		createdAt: new Date().toISOString()
+	} satisfies Invite);
+	return code;
+}
+
+export async function consumeInvite(code: string): Promise<string | null> {
+	if (!/^[A-Z2-9]{8}$/.test(code)) return null;
+	const invite = await readJSON<Invite>(`data/invites/${code}.json`);
+	if (!invite) return null;
+	try {
+		await del(`data/invites/${code}.json`);
+	} catch {
+		// 既に消費済みでも進める(同時参加のレースは last-write-wins 前提のベータ仕様)
+	}
+	return invite.slug;
+}

@@ -1,6 +1,14 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
-import { getShow, saveShow, getOrCreateUser, saveUser, LIMITS, type Episode } from '$lib/server/store';
+import {
+	getShow,
+	saveShow,
+	getOrCreateUser,
+	saveUser,
+	canPublish,
+	LIMITS,
+	type Episode
+} from '$lib/server/store';
 
 export const prerender = false;
 
@@ -12,7 +20,7 @@ export async function POST({ request, params }) {
 	const sub = await requireAuth(request);
 	const show = await getShow(params.slug);
 	if (!show) throw error(404, 'show not found');
-	if (show.ownerSub !== sub) throw error(403, 'not your show');
+	if (!canPublish(show, sub)) throw error(403, 'not a member of this show');
 
 	const body = await request.json().catch(() => null);
 	if (!body?.title || typeof body.title !== 'string') throw error(400, 'title is required');
@@ -22,7 +30,8 @@ export async function POST({ request, params }) {
 	if (bytes <= 0 || bytes > LIMITS.bytesPerEpisode)
 		throw error(400, `bytes must be 1..${LIMITS.bytesPerEpisode}`);
 
-	const user = await getOrCreateUser(sub);
+	// ストレージはメンバーが公開しても番組オーナーに計上する(上限管理を一元化)
+	const user = await getOrCreateUser(show.ownerSub);
 	if (user.storageUsed + bytes > LIMITS.storagePerUser)
 		throw error(413, 'storage limit exceeded (10GB)');
 

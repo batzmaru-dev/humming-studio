@@ -19,7 +19,7 @@ export async function POST({ request }) {
 	if (!body?.title || typeof body.title !== 'string') throw error(400, 'title is required');
 
 	const slug = typeof body.slug === 'string' ? body.slug.toLowerCase() : '';
-	if (!SLUG_PATTERN.test(slug)) {
+	if (!SLUG_PATTERN.test(slug) || ['join', 'import'].includes(slug)) {
 		throw error(400, 'slug must be 3-40 chars of [a-z0-9-], no leading/trailing hyphen');
 	}
 	if (await getShow(slug)) throw error(409, 'slug is already taken');
