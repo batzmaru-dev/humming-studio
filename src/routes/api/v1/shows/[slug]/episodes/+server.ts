@@ -1,16 +1,10 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
-import {
-	getShow,
-	saveShow,
-	getOrCreateUser,
-	saveUser,
-	canPublish,
-	LIMITS,
-	type Episode
-} from '$lib/server/store';
+import { getShow, mutateShow, mutateUser, canPublish, LIMITS, type Episode } from '$lib/server/store';
 
 export const prerender = false;
+
+class StorageLimitError extends Error {}
 
 /**
  * エピソードを公開する。音声は先に POST /api/v1/upload(クライアントアップロード)で
@@ -30,10 +24,18 @@ export async function POST({ request, params }) {
 	if (bytes <= 0 || bytes > LIMITS.bytesPerEpisode)
 		throw error(400, `bytes must be 1..${LIMITS.bytesPerEpisode}`);
 
-	// ストレージはメンバーが公開しても番組オーナーに計上する(上限管理を一元化)
-	const user = await getOrCreateUser(show.ownerSub);
-	if (user.storageUsed + bytes > LIMITS.storagePerUser)
-		throw error(413, 'storage limit exceeded (10GB)');
+	// ストレージはメンバーが公開しても番組オーナーに計上する(上限管理を一元化)。
+	// 上限チェックと計上は行ロック内で原子的に行う(同時公開でも超過しない)
+	try {
+		await mutateUser(show.ownerSub, (user) => {
+			if (user.storageUsed + bytes > LIMITS.storagePerUser) throw new StorageLimitError();
+			user.storageUsed += bytes;
+			return user;
+		});
+	} catch (e) {
+		if (e instanceof StorageLimitError) throw error(413, 'storage limit exceeded (10GB)');
+		throw e;
+	}
 
 	const episode: Episode = {
 		id: crypto.randomUUID(),
@@ -55,11 +57,18 @@ export async function POST({ request, params }) {
 		status: 'published'
 	};
 
-	show.episodes.push(episode);
-	await saveShow(show);
-
-	user.storageUsed += bytes;
-	await saveUser(user);
+	const updated = await mutateShow(params.slug, (s) => {
+		s.episodes.push(episode);
+		return s;
+	});
+	if (!updated) {
+		// 直前に番組が消えた場合は計上を戻す
+		await mutateUser(show.ownerSub, (user) => {
+			user.storageUsed = Math.max(0, user.storageUsed - bytes);
+			return user;
+		});
+		throw error(404, 'show not found');
+	}
 
 	return json({ episode }, { status: 201 });
 }

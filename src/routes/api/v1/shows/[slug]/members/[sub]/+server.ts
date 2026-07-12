@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
-import { getShow, saveShow, getUser, saveUser } from '$lib/server/store';
+import { getShow, mutateShow, mutateUser } from '$lib/server/store';
 
 export const prerender = false;
 
@@ -16,14 +16,15 @@ export async function DELETE({ request, params }) {
 	if (!isOwner && target !== sub) throw error(403, 'not allowed');
 	if (target === show.ownerSub) throw error(400, 'owner cannot be removed');
 
-	show.members = (show.members ?? []).filter((m) => m !== target);
-	await saveShow(show);
+	await mutateShow(params.slug, (s) => {
+		s.members = (s.members ?? []).filter((m) => m !== target);
+		return s;
+	});
 
-	const member = await getUser(target);
-	if (member) {
-		member.shows = member.shows.filter((s) => s !== show.slug);
-		await saveUser(member);
-	}
+	await mutateUser(target, (member) => {
+		member.shows = member.shows.filter((s) => s !== params.slug);
+		return member;
+	});
 
 	return json({ ok: true });
 }

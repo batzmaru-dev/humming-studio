@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
-import { consumeInvite, getShow, saveShow, getOrCreateUser, saveUser } from '$lib/server/store';
+import { consumeInvite, mutateShow, mutateUser } from '$lib/server/store';
 
 export const prerender = false;
 
@@ -11,22 +11,22 @@ export async function POST({ request }) {
 	const code = typeof body?.code === 'string' ? body.code.trim().toUpperCase() : '';
 	if (!code) throw error(400, 'code is required');
 
+	// 消費は DELETE RETURNING で原子的(同時参加でも二重使用されない)
 	const slug = await consumeInvite(code);
 	if (!slug) throw error(404, '招待コードが無効か、使用済みです');
 
-	const show = await getShow(slug);
+	const show = await mutateShow(slug, (s) => {
+		if (s.ownerSub === sub || (s.members ?? []).includes(sub)) return null;
+		s.members = [...(s.members ?? []), sub];
+		return s;
+	});
 	if (!show) throw error(404, 'show not found');
 
-	if (show.ownerSub !== sub && !(show.members ?? []).includes(sub)) {
-		show.members = [...(show.members ?? []), sub];
-		await saveShow(show);
-	}
-
-	const user = await getOrCreateUser(sub);
-	if (!user.shows.includes(slug)) {
+	await mutateUser(sub, (user) => {
+		if (user.shows.includes(slug)) return null;
 		user.shows.push(slug);
-		await saveUser(user);
-	}
+		return user;
+	});
 
 	return json({
 		show: {

@@ -1,14 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
-import {
-	getOrCreateUser,
-	saveUser,
-	getShow,
-	saveShow,
-	addShowToIndex,
-	SLUG_PATTERN,
-	type Show
-} from '$lib/server/store';
+import { mutateUser, getShow, saveShow, SLUG_PATTERN, type Show } from '$lib/server/store';
 
 export const prerender = false;
 
@@ -40,13 +32,12 @@ export async function POST({ request }) {
 		episodes: []
 	};
 	await saveShow(show);
-	await addShowToIndex(slug);
 
-	const user = await getOrCreateUser(sub);
-	if (!user.shows.includes(slug)) {
+	await mutateUser(sub, (user) => {
+		if (user.shows.includes(slug)) return null;
 		user.shows.push(slug);
-		await saveUser(user);
-	}
+		return user;
+	});
 
 	return json(
 		{ show: { ...show, feedURL: `https://humming-studio.com/feed/${slug}.xml` } },
