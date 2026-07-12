@@ -184,11 +184,15 @@
 		<h2 class="text-3xl font-bold">ベータテスター募集中</h2>
 		<p class="mt-4 text-surface-300">
 			iPad(iPadOS 17 以降)でお使いいただけるテスターを募集しています(無料)。<br />
-			TestFlight の招待リンクは準備中です。お急ぎの方はメールでご連絡ください。
+			TestFlight アプリをインストールして、下のリンクから参加してください。
 		</p>
 		<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-			<a href="mailto:kawakami@tsunagu-hito.com" class="btn preset-filled-primary-500 btn-lg"
-				>kawakami@tsunagu-hito.com</a
+			<a
+				href="https://testflight.apple.com/join/s8DBaCfG"
+				class="btn preset-filled-primary-500 btn-lg">TestFlight で参加する</a
+			>
+			<a href="mailto:kawakami@tsunagu-hito.com" class="btn preset-tonal btn-lg"
+				>メールで問い合わせ</a
 			>
 		</div>
 		<p class="mt-6 text-xs text-surface-500">
