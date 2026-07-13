@@ -37,7 +37,8 @@ export async function PATCH({ request, params }) {
 			'author',
 			'category',
 			'language',
-			'artworkURL'
+			'artworkURL',
+			'ownerEmail'
 		] as const) {
 			if (typeof body[key] === 'string') s[key] = body[key];
 		}

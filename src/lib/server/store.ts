@@ -37,6 +37,8 @@ export interface Show {
 	language: string;
 	explicit: boolean;
 	artworkURL?: string;
+	/** フィードの itunes:owner に載せる連絡先(Spotify 等の所有確認メールが届く) */
+	ownerEmail?: string;
 	radioKeizaiOptIn: boolean;
 	createdAt: string;
 	episodes: Episode[];

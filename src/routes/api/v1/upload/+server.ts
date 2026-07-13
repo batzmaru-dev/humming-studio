@@ -28,7 +28,15 @@ export async function POST({ request }) {
 			body,
 			request,
 			onBeforeGenerateToken: async (pathname) => {
-				if (!pathname.startsWith('audio/')) throw new Error('pathname must start with audio/');
+				// 番組アートワーク(正方形 1400-3000px を推奨。JPEG/PNG)
+				if (pathname.startsWith('artwork/')) {
+					return {
+						allowedContentTypes: ['image/jpeg', 'image/png'],
+						maximumSizeInBytes: 10 * 1024 * 1024,
+						addRandomSuffix: true
+					};
+				}
+				if (!pathname.startsWith('audio/')) throw new Error('pathname must start with audio/ or artwork/');
 				return {
 					allowedContentTypes: ['audio/mp4', 'audio/x-m4a', 'audio/mpeg', 'audio/wav', 'audio/aac'],
 					maximumSizeInBytes: LIMITS.bytesPerEpisode,

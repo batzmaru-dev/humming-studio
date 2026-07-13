@@ -59,6 +59,11 @@ export function buildFeed(show: Show): string {
 		? `    <itunes:image href="${esc(show.artworkURL)}"/>\n`
 		: '';
 
+	// Spotify / Apple の所有確認・連絡先(登録時に必要)
+	const owner = show.ownerEmail
+		? `    <itunes:owner>\n      <itunes:name>${esc(show.author)}</itunes:name>\n      <itunes:email>${esc(show.ownerEmail)}</itunes:email>\n    </itunes:owner>\n`
+		: '';
+
 	return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
      xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
@@ -73,7 +78,8 @@ export function buildFeed(show: Show): string {
     <itunes:summary>${cdata(show.description)}</itunes:summary>
     <itunes:explicit>${show.explicit ? 'true' : 'false'}</itunes:explicit>
     <itunes:category text="${esc(show.category)}"/>
-${artwork}    <atom:link href="${SITE}/feed/${show.slug}.xml" rel="self" type="application/rss+xml"/>
+    <itunes:type>episodic</itunes:type>
+${owner}${artwork}    <atom:link href="${SITE}/feed/${show.slug}.xml" rel="self" type="application/rss+xml"/>
     <generator>Humming Studio</generator>
 ${items}
   </channel>
