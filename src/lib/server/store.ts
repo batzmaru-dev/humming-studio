@@ -56,6 +56,8 @@ export interface User {
 	createdAt: string;
 	storageUsed: number;
 	shows: string[]; // slugs
+	/** 無料お試しの BGM/SE 生成を消費済みか(生涯 1 回) */
+	freeAudioGenUsed?: boolean;
 }
 
 /** 規約に合わせた上限 */
@@ -63,7 +65,11 @@ export const LIMITS = {
 	storagePerUser: 10 * 1024 * 1024 * 1024, // 10GB
 	bytesPerEpisode: 500 * 1024 * 1024, // 500MB
 	/** サブスク(Pro)のクラウド文字起こし上限(秒/月) */
-	transcriptionSecondsPerMonth: 360 * 60
+	transcriptionSecondsPerMonth: 360 * 60,
+	/** サブスク(Pro)の BGM/SE 生成上限(回/月) */
+	audioGenerationsPerMonth: 5,
+	/** 無料ユーザーが試せる BGM/SE 生成(生涯・合計) */
+	freeAudioGenerationsTotal: 1
 };
 
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38})[a-z0-9]$/;
@@ -235,6 +241,30 @@ export async function getTranscriptionUsage(sub: string): Promise<number> {
 	return Number(rows[0]?.seconds ?? 0);
 }
 
+// --- AI 使用量(BGM/SE 生成メータリング) ---
+
+/** 今月の生成回数 */
+export async function getAudioGenUsage(sub: string): Promise<number> {
+	const month = new Date().toISOString().slice(0, 7);
+	const rows = await query<{ count: number }>(
+		'SELECT count FROM audio_gen_usage WHERE sub = $1 AND month = $2',
+		[sub, month]
+	);
+	return Number(rows[0]?.count ?? 0);
+}
+
+/** 今月の生成回数を 1 加算して合計を返す(原子的 UPSERT) */
+export async function addAudioGenUsage(sub: string): Promise<number> {
+	const month = new Date().toISOString().slice(0, 7);
+	const rows = await query<{ count: number }>(
+		`INSERT INTO audio_gen_usage (sub, month, count) VALUES ($1, $2, 1)
+		 ON CONFLICT (sub, month) DO UPDATE SET count = audio_gen_usage.count + 1
+		 RETURNING count`,
+		[sub, month]
+	);
+	return Number(rows[0]?.count ?? 1);
+}
+
 // --- スキーマ(初期化スクリプトと移行スクリプトから使う) ---
 
 export const SCHEMA_SQL = `
@@ -255,6 +285,12 @@ CREATE TABLE IF NOT EXISTS ai_usage (
 	sub     text NOT NULL,
 	month   text NOT NULL,
 	seconds double precision NOT NULL DEFAULT 0,
+	PRIMARY KEY (sub, month)
+);
+CREATE TABLE IF NOT EXISTS audio_gen_usage (
+	sub   text NOT NULL,
+	month text NOT NULL,
+	count integer NOT NULL DEFAULT 0,
 	PRIMARY KEY (sub, month)
 );
 `;
