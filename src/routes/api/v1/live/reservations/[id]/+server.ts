@@ -22,6 +22,9 @@ export async function GET({ request, params }) {
 	} catch {
 		host = null;
 	}
+	// DJ/SOURCE ポート(既定 8005)は AzuraCast/Liquidsoap harbor の生 Icecast ポートで、
+	// 通常 TLS なし(nginx proxy を経由しない)。ベース URL の https とは無関係なので
+	// 明示的に AZURACAST_DJ_TLS で制御する(既定 false = 平文)。
 	const connection =
 		r.azUsername && r.azPassword
 			? {
@@ -30,8 +33,9 @@ export async function GET({ request, params }) {
 					mount: env.AZURACAST_DJ_MOUNT ?? '/',
 					username: r.azUsername,
 					password: r.azPassword,
-					// TLS 有無(既定は AzuraCast のベース URL が https かどうか)
-					tls: (env.AZURACAST_BASE_URL ?? '').startsWith('https')
+					tls: env.AZURACAST_DJ_TLS === 'true',
+					// harbor が受ける入力フォーマット(iOS ネイティブは AAC/ADTS が扱いやすい)
+					format: env.AZURACAST_DJ_FORMAT ?? 'aac'
 				}
 			: null;
 
