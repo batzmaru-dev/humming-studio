@@ -13,6 +13,12 @@
 		{ done: false, text: 'リスナーのお便り' },
 		{ done: false, text: '来週の予告' }
 	];
+	// 実機スクリーンショット(iPhone)
+	const shots = [
+		{ src: '/shots/iphone-editor.jpg', caption: 'ブロックを消すだけの編集。連結 FAB とジョグで再生位置も指先で。' },
+		{ src: '/shots/iphone-chapters.jpg', caption: 'AI が話題ごとに目次(チャプター)を自動生成。' },
+		{ src: '/shots/iphone-mixer.jpg', caption: '3バンド EQ・パン・フェーダーの本格ミキサーを内蔵。' }
+	];
 	function pill(mic: string) {
 		return mic === 'leaf'
 			? 'background:rgba(115,199,148,.22);color:#CFEEDB'
@@ -171,6 +177,35 @@
 			<p class="mt-2 text-sm text-surface-300">
 				いらないブロックを選んで削除するだけ。映像も同じ編集がそのままカットに反映され、音声は WAV / M4A、動画は縦型・横型で書き出せます。
 			</p>
+		</div>
+	</div>
+</section>
+
+<!-- 実機スクリーンショット(iPhone) -->
+<section class="border-y border-surface-800 bg-surface-900/40">
+	<div class="mx-auto max-w-6xl px-6 py-20">
+		<h2 class="text-center text-3xl font-bold">実際の画面</h2>
+		<p class="mx-auto mt-3 max-w-xl text-center text-surface-300">
+			iPhone 一台で、収録から編集・ミックスまで。すべて実際のアプリ画面です。
+		</p>
+		<div class="mt-12 flex flex-wrap items-start justify-center gap-8 sm:gap-10">
+			{#each shots as s}
+				<figure class="w-[236px]">
+					<div
+						class="rounded-[2.1rem] border-[6px] border-[#050f0a] bg-[#050f0a] shadow-2xl shadow-[#298C5C]/25"
+					>
+						<img
+							src={s.src}
+							alt={s.caption}
+							loading="lazy"
+							class="w-full rounded-[1.6rem]"
+						/>
+					</div>
+					<figcaption class="mx-auto mt-4 max-w-[240px] text-center text-sm text-surface-400">
+						{s.caption}
+					</figcaption>
+				</figure>
+			{/each}
 		</div>
 	</div>
 </section>
