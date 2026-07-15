@@ -31,8 +31,24 @@ CREATE TABLE IF NOT EXISTS audio_gen_usage (
 	count integer NOT NULL DEFAULT 0,
 	PRIMARY KEY (sub, month)
 );
+CREATE TABLE IF NOT EXISTS live_reservations (
+	id             text PRIMARY KEY,
+	sub            text NOT NULL,
+	slot_start     timestamptz NOT NULL,
+	duration_min   integer NOT NULL DEFAULT 30,
+	status         text NOT NULL DEFAULT 'approved',
+	title          text,
+	note           text,
+	az_streamer_id integer,
+	az_username    text,
+	az_password    text,
+	created_at     timestamptz NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS live_reservations_slot_uniq
+	ON live_reservations (slot_start) WHERE status IN ('approved','live');
+CREATE INDEX IF NOT EXISTS live_reservations_sub_idx ON live_reservations (sub);
 `;
 
 await pool.query(SCHEMA_SQL);
-console.log('schema applied (audio_gen_usage ほか)');
+console.log('schema applied (live_reservations ほか)');
 await pool.end();
