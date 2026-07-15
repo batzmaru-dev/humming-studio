@@ -46,6 +46,8 @@ export async function GET({ request, params }) {
 		durationMin: r.durationMin,
 		status: r.status,
 		title: r.title,
+		// 生放送開始時に自動で流す局ジングル(設定時のみ)。アプリが取得して go-live 冒頭に鳴らす。
+		openingJingleURL: env.AZURACAST_OPENING_JINGLE_URL ?? null,
 		connection
 	});
 }

@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS live_reservations (
 CREATE UNIQUE INDEX IF NOT EXISTS live_reservations_slot_uniq
 	ON live_reservations (slot_start) WHERE status IN ('approved','live');
 CREATE INDEX IF NOT EXISTS live_reservations_sub_idx ON live_reservations (sub);
+ALTER TABLE live_reservations ADD COLUMN IF NOT EXISTS show_slug text;
 `;
 
 await pool.query(SCHEMA_SQL);

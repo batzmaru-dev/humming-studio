@@ -6,6 +6,8 @@ import {
 	listReservationsBySub,
 	setReservationStatus,
 	attachStreamer,
+	getShow,
+	canPublish,
 	LIMITS,
 	SlotTakenError,
 	WeeklyLimitError,
@@ -25,6 +27,7 @@ function dto(r: LiveReservation) {
 		labelJst: reservationLabelJst(r),
 		durationMin: r.durationMin,
 		status: r.status,
+		showSlug: r.showSlug,
 		title: r.title,
 		note: r.note,
 		streamer:
@@ -78,6 +81,18 @@ export async function POST({ request }) {
 	const title = typeof body.title === 'string' ? body.title.trim().slice(0, 80) || null : null;
 	const note = typeof body.note === 'string' ? body.note.trim().slice(0, 500) || null : null;
 
+	// 番組の紐づけ(任意)。自分が権限を持つ番組のみ許可。ライブ中の now playing 表示に使う。
+	let showSlug: string | null = null;
+	let showTitle: string | null = null;
+	if (typeof body.showSlug === 'string' && body.showSlug) {
+		const show = await getShow(body.showSlug);
+		if (!show || !canPublish(show, sub)) {
+			throw error(403, '指定した番組に権限がありません');
+		}
+		showSlug = show.slug;
+		showTitle = show.title;
+	}
+
 	// 4) 予約作成(週 1 回・二重予約は store 側で原子的に弾く)
 	const id = crypto.randomUUID();
 	let reservation: LiveReservation;
@@ -87,6 +102,7 @@ export async function POST({ request }) {
 			sub,
 			slotStartUTC,
 			durationMin: LIMITS.liveSlotMinutes,
+			showSlug,
 			title,
 			note
 		});
@@ -104,8 +120,8 @@ export async function POST({ request }) {
 			const streamer = await azuracast.createSlotStreamer({
 				username,
 				password,
-				displayName: broadcaster.displayName || 'Humming Studio 放送',
-				comments: `Humming Studio 予約 ${id} / ${title ?? ''}`,
+				displayName: showTitle || broadcaster.displayName || 'Humming Studio 放送',
+				comments: `Humming Studio 予約 ${id} / ${showSlug ?? ''} / ${title ?? ''}`,
 				slotStartUTC,
 				durationMin: LIMITS.liveSlotMinutes
 			});

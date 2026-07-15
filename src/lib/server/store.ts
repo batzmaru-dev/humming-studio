@@ -94,6 +94,8 @@ export interface LiveReservation {
 	slotStart: string;
 	durationMin: number;
 	status: ReservationStatus;
+	/** この生放送を紐づける番組(自分の show の slug)。ライブ中の now playing 表示に使う */
+	showSlug: string | null;
 	/** 番組タイトル(任意) */
 	title: string | null;
 	note: string | null;
@@ -384,6 +386,7 @@ function rowToReservation(r: Record<string, unknown>): LiveReservation {
 		slotStart: new Date(r.slot_start as string).toISOString(),
 		durationMin: Number(r.duration_min),
 		status: r.status as ReservationStatus,
+		showSlug: (r.show_slug as string | null) ?? null,
 		title: (r.title as string | null) ?? null,
 		note: (r.note as string | null) ?? null,
 		azStreamerId: r.az_streamer_id == null ? null : Number(r.az_streamer_id),
@@ -430,6 +433,20 @@ export async function listUpcomingReservations(): Promise<LiveReservation[]> {
 	return rows.map(rowToReservation);
 }
 
+/** 今まさに放送枠の時間内にあるアクティブ予約(前後 pad 分の余白込み)。/live/now 用。 */
+export async function getActiveLiveReservationNow(padMinutes = 5): Promise<LiveReservation | null> {
+	const rows = await query(
+		`SELECT * FROM live_reservations
+		 WHERE status IN ('approved','live')
+		   AND now() >= slot_start - ($1 || ' minutes')::interval
+		   AND now() <= slot_start + ((duration_min + $1) || ' minutes')::interval
+		 ORDER BY slot_start DESC
+		 LIMIT 1`,
+		[padMinutes]
+	);
+	return rows[0] ? rowToReservation(rows[0]) : null;
+}
+
 export class SlotTakenError extends Error {}
 export class WeeklyLimitError extends Error {}
 
@@ -444,6 +461,7 @@ export async function createReservation(params: {
 	sub: string;
 	slotStartUTC: Date;
 	durationMin: number;
+	showSlug: string | null;
 	title: string | null;
 	note: string | null;
 }): Promise<LiveReservation> {
@@ -461,14 +479,15 @@ export async function createReservation(params: {
 	}
 	try {
 		const rows = await query(
-			`INSERT INTO live_reservations (id, sub, slot_start, duration_min, status, title, note)
-			 VALUES ($1, $2, $3, $4, 'approved', $5, $6)
+			`INSERT INTO live_reservations (id, sub, slot_start, duration_min, status, show_slug, title, note)
+			 VALUES ($1, $2, $3, $4, 'approved', $5, $6, $7)
 			 RETURNING *`,
 			[
 				params.id,
 				params.sub,
 				params.slotStartUTC.toISOString(),
 				params.durationMin,
+				params.showSlug,
 				params.title,
 				params.note
 			]
@@ -548,6 +567,7 @@ CREATE TABLE IF NOT EXISTS live_reservations (
 	slot_start     timestamptz NOT NULL,
 	duration_min   integer NOT NULL DEFAULT 30,
 	status         text NOT NULL DEFAULT 'approved',
+	show_slug      text,
 	title          text,
 	note           text,
 	az_streamer_id integer,
@@ -555,6 +575,7 @@ CREATE TABLE IF NOT EXISTS live_reservations (
 	az_password    text,
 	created_at     timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE live_reservations ADD COLUMN IF NOT EXISTS show_slug text;
 -- 同一枠はアクティブな予約 1 件だけ(二重予約を DB レベルで防ぐ)
 CREATE UNIQUE INDEX IF NOT EXISTS live_reservations_slot_uniq
 	ON live_reservations (slot_start) WHERE status IN ('approved','live');
