@@ -51,6 +51,13 @@ export function canPublish(show: Show, sub: string): boolean {
 	return show.ownerSub === sub || (show.members ?? []).includes(sub);
 }
 
+export interface VoiceProfile {
+	id: string;
+	name: string;
+	weights: number[]; // 周波数ビンごとの声の強さ
+	createdAt: string;
+}
+
 export interface User {
 	sub: string;
 	createdAt: string;
@@ -58,6 +65,8 @@ export interface User {
 	shows: string[]; // slugs
 	/** 無料お試しの BGM/SE 生成を消費済みか(生涯 1 回) */
 	freeAudioGenUsed?: boolean;
+	/** 「声を守る」ボイスプロファイル(端末間で共有) */
+	voiceProfiles?: VoiceProfile[];
 }
 
 /** 規約に合わせた上限 */
