@@ -447,6 +447,17 @@ export async function getActiveLiveReservationNow(padMinutes = 5): Promise<LiveR
 	return rows[0] ? rowToReservation(rows[0]) : null;
 }
 
+/** 枠の終了時刻を過ぎたのにまだアクティブな予約(cron の後始末対象)。 */
+export async function getEndedActiveReservations(): Promise<LiveReservation[]> {
+	const rows = await query(
+		`SELECT * FROM live_reservations
+		 WHERE status IN ('approved','live')
+		   AND now() > slot_start + (duration_min || ' minutes')::interval
+		 ORDER BY slot_start`
+	);
+	return rows.map(rowToReservation);
+}
+
 export class SlotTakenError extends Error {}
 export class WeeklyLimitError extends Error {}
 

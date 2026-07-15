@@ -1,0 +1,8 @@
+{
+	"crons": [
+		{
+			"path": "/api/v1/cron/live-sweep",
+			"schedule": "*/5 * * * *"
+		}
+	]
+}

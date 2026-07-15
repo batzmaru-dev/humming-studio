@@ -52,6 +52,13 @@ export interface AzScheduleItem {
 	loop_once?: boolean;
 }
 
+export interface AzBroadcast {
+	id: number;
+	timestampStart: string; // ISO
+	timestampEnd?: string | null;
+	recordingPath?: string | null;
+}
+
 export interface AzStreamer {
 	id: number;
 	streamer_username: string;
@@ -59,6 +66,7 @@ export interface AzStreamer {
 	is_active: boolean;
 	enforce_schedule: boolean;
 	schedule_items: AzScheduleItem[];
+	broadcasts?: AzBroadcast[];
 }
 
 /** UTC の 30 分枠 → AzuraCast schedule_items（JST の当日窓）に変換。
@@ -158,6 +166,23 @@ export const azuracast = {
 
 	deleteStreamer: async (id: number): Promise<void> => {
 		await az(`/station/${stationId()}/streamer/${id}`, { method: 'DELETE' });
+	},
+
+	getStreamer: (id: number) => az<AzStreamer>(`/station/${stationId()}/streamer/${id}`),
+
+	/** ライブ放送の録音ファイルを ArrayBuffer で取得。 */
+	downloadBroadcastRecording: async (broadcastId: number): Promise<ArrayBuffer> => {
+		const c = cfg();
+		if (!c) throw new Error('AzuraCast is not configured');
+		const res = await fetch(
+			`${c.base}/api/station/${c.stationId}/streamer/broadcast/${broadcastId}/download`,
+			{ headers: { 'X-API-Key': c.key }, signal: AbortSignal.timeout(60000) }
+		);
+		if (!res.ok) {
+			const t = await res.text().catch(() => '');
+			throw new Error(`AzuraCast download ${res.status}: ${t}`);
+		}
+		return res.arrayBuffer();
 	},
 
 	/** 接続中の全ライブストリーマーを強制切断（AutoDJ に切戻す）。 */
