@@ -61,9 +61,12 @@ export interface AzStreamer {
 	schedule_items: AzScheduleItem[];
 }
 
-/** UTC の 30 分枠 → AzuraCast schedule_items（JST の当日ピンポイント窓）に変換 */
-export function slotToScheduleItem(slotStartUTC: Date, durationMin: number): AzScheduleItem {
-	const jst = new Date(slotStartUTC.getTime() + 9 * 60 * 60 * 1000);
+/** UTC の 30 分枠 → AzuraCast schedule_items（JST の当日窓）に変換。
+ *  padMin だけ前後に広げ、アプリの go-live 解禁(枠の5分前)と揃える。 */
+export function slotToScheduleItem(slotStartUTC: Date, durationMin: number, padMin = 5): AzScheduleItem {
+	// 枠開始の padMin 分前を窓の開始にする
+	const openUTC = new Date(slotStartUTC.getTime() - padMin * 60 * 1000);
+	const jst = new Date(openUTC.getTime() + 9 * 60 * 60 * 1000);
 	const y = jst.getUTCFullYear();
 	const m = String(jst.getUTCMonth() + 1).padStart(2, '0');
 	const d = String(jst.getUTCDate()).padStart(2, '0');
@@ -71,7 +74,8 @@ export function slotToScheduleItem(slotStartUTC: Date, durationMin: number): AzS
 	const hh = jst.getUTCHours();
 	const mm = jst.getUTCMinutes();
 	const startNum = hh * 100 + mm;
-	const endTotalMin = hh * 60 + mm + durationMin;
+	// 窓の長さ = pad(前) + 枠尺 + pad(後)
+	const endTotalMin = hh * 60 + mm + durationMin + padMin * 2;
 	const endHh = Math.floor(endTotalMin / 60) % 24;
 	const endMm = endTotalMin % 60;
 	const endNum = endHh * 100 + endMm;

@@ -122,7 +122,9 @@ export const LIMITS = {
 	/** 予約可能な枠の時間帯(JST の時、その時台に 30 分刻みで開ける)。運営が広げられる。 */
 	liveSlotOpenHoursJst: [19, 20, 21, 22],
 	/** 予約開始まで最低これだけ先でないと取れない(分) */
-	liveBookingLeadMinutes: 60
+	liveBookingLeadMinutes: 10,
+	/** ストリーマー許可窓を枠の前後に広げる余白(分)。アプリの go-live 解禁(5分前)と揃える。 */
+	liveStreamerWindowPadMinutes: 5
 };
 
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38})[a-z0-9]$/;
