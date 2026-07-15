@@ -13,6 +13,7 @@
 				Humming Studio
 			</a>
 			<div class="ml-auto flex items-center gap-5 text-sm">
+				<a href="/features" class="text-surface-300 hover:text-surface-50">機能</a>
 				<a href="/terms" class="text-surface-300 hover:text-surface-50">利用規約</a>
 				<a href="/privacy" class="text-surface-300 hover:text-surface-50">プライバシー</a>
 				<a href="/takedown" class="hidden text-surface-300 hover:text-surface-50 sm:inline"
