@@ -4,3 +4,6 @@ build
 .vercel
 .DS_Store
 .env*.local
+
+# admin token for live 生放送 admin API (local only)
+.admin-token.local
