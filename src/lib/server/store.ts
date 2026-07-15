@@ -44,6 +44,22 @@ export interface Show {
 	episodes: Episode[];
 	/** チームメンバー(オーナー以外の sub)。エピソードの公開・削除ができる */
 	members?: string[];
+	/** 番組テンプレート(編集スタイル)。番組メンバー間で共有する。中身はアプリ側の構造をそのまま保持 */
+	showTemplates?: ShowTemplate[];
+}
+
+/** 番組テンプレート = 編集スタイル(書き出し設定・絵づくり・画像)。サーバは中身を解釈しない */
+export interface ShowTemplate {
+	id: string;
+	name: string;
+	createdAt: string;
+	/** 最終更新者の sub(表示用) */
+	updatedBy?: string;
+	videoExport?: unknown;
+	videoDesign?: unknown;
+	/** base64(埋め込み画像) */
+	backgroundImage?: string | null;
+	frameImage?: string | null;
 }
 
 /** 番組メタデータの編集・チーム管理はオーナーのみ、エピソード操作はメンバーも可 */
@@ -126,7 +142,11 @@ export const LIMITS = {
 	/** 予約開始まで最低これだけ先でないと取れない(分) */
 	liveBookingLeadMinutes: 10,
 	/** ストリーマー許可窓を枠の前後に広げる余白(分)。アプリの go-live 解禁(5分前)と揃える。 */
-	liveStreamerWindowPadMinutes: 5
+	liveStreamerWindowPadMinutes: 5,
+	/** 番組テンプレートの最大数(番組ごと) */
+	templatesPerShow: 40,
+	/** 番組テンプレート全体の最大バイト数(番組ごと・DB 保護) */
+	templatesTotalBytes: 8 * 1024 * 1024
 };
 
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38})[a-z0-9]$/;
