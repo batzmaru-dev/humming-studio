@@ -24,6 +24,45 @@
 			? 'background:rgba(115,199,148,.22);color:#CFEEDB'
 			: 'background:rgba(111,173,230,.22);color:#BcdcF5';
 	}
+	// 選べる UI デザイン(アプリのテーマと同じ 3 種)
+	const themes = [
+		{
+			name: 'GREEN',
+			desc: '深い森のクールな余白。集中して仕上げたい人へ。',
+			bg: 'linear-gradient(160deg,#0B1F17,#0D3D2B 60%,#081710)',
+			accent: '#298C5C',
+			accentLight: '#9BD8B2',
+			ink: '#EAF5EE',
+			card: 'rgba(234,245,238,.06)',
+			stroke: 'rgba(234,245,238,.14)',
+			onAccent: '#ffffff',
+			font: "font-family:system-ui,sans-serif;"
+		},
+		{
+			name: 'CANDY',
+			desc: '原宿系のポップでかわいい世界観。配信を楽しく。',
+			bg: 'linear-gradient(160deg,#FFE3F0,#FFF7FB 55%,#EFE7FF)',
+			accent: '#FF5FA8',
+			accentLight: '#C9B6F2',
+			ink: '#6B5B8E',
+			card: '#ffffff',
+			stroke: 'rgba(255,143,193,.35)',
+			onAccent: '#ffffff',
+			font: "font-family:'Zen Maru Gothic',system-ui,sans-serif;font-weight:800;"
+		},
+		{
+			name: 'KEIZAI',
+			desc: '硬派でエディトリアルな経済ラジオの佇まい。明朝体。',
+			bg: 'linear-gradient(160deg,#FAF5EA,#F3EBDA 55%,#ECE1CB)',
+			accent: '#D9643A',
+			accentLight: '#F5D66B',
+			ink: '#211A11',
+			card: '#FFFDF8',
+			stroke: 'rgba(33,26,17,.18)',
+			onAccent: '#FAF5EA',
+			font: "font-family:'Shippori Mincho',serif;font-weight:700;letter-spacing:.02em;"
+		}
+	];
 </script>
 
 <svelte:head>
@@ -178,6 +217,61 @@
 				いらないブロックを選んで削除するだけ。映像も同じ編集がそのままカットに反映され、音声は WAV / M4A、動画は縦型・横型で書き出せます。
 			</p>
 		</div>
+	</div>
+</section>
+
+<!-- 選べる UI デザイン 3 種 -->
+<section class="border-y border-surface-800 bg-surface-900/40">
+	<div class="mx-auto max-w-6xl px-6 py-20">
+		<span class="badge preset-tonal-primary mx-auto mb-4 block w-fit">選べる UI 3 種</span>
+		<h2 class="text-center text-3xl font-bold">見た目は、3 つの世界から選べる</h2>
+		<p class="mx-auto mt-3 max-w-2xl text-center text-surface-300">
+			「録る・読む・消す」の編集体験はそのままに、好みのデザインで収録・編集できます。初回に選んで、あとから設定でいつでも切り替え可能です。
+		</p>
+		<div class="mt-12 grid gap-6 md:grid-cols-3">
+			{#each themes as t}
+				<figure class="card preset-outlined-surface-700 overflow-hidden !p-0">
+					<!-- テーマ配色のミニモック -->
+					<div class="p-4" style="background:{t.bg}">
+						<div class="flex items-center gap-2">
+							<span class="h-2.5 w-2.5 rounded-full" style="background:{t.accent}"></span>
+							<span class="block h-1.5 w-20 rounded" style="background:{t.ink};opacity:.85"></span>
+							<span class="ml-auto block h-1.5 w-8 rounded" style="background:{t.ink};opacity:.35"></span>
+						</div>
+						<div class="mt-4 space-y-2">
+							{#each [1, 2, 3] as i}
+								<div
+									class="rounded-lg p-2.5"
+									style="background:{t.card};border:1px solid {t.stroke}"
+								>
+									<div class="flex items-center gap-2">
+										<span
+											class="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+											style="background:{t.accent};color:{t.onAccent}">話者{i}</span
+										>
+										<span class="block h-1.5 flex-1 rounded" style="background:{t.ink};opacity:.5"
+										></span>
+										<span
+											class="block h-3 w-3 rounded-full"
+											style="background:{t.accentLight}"
+										></span>
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+					<figcaption class="p-5">
+						<span class="text-xl" style={t.font}>{t.name}</span>
+						<p class="mt-1.5 text-sm text-surface-300">{t.desc}</p>
+					</figcaption>
+				</figure>
+			{/each}
+		</div>
+		<p class="mx-auto mt-8 max-w-xl text-center text-xs text-surface-500">
+			GREEN は現行のデザイン。CANDY はポップな原宿系ラジオ、KEIZAI は
+			<a href="https://radio-keizai.com" class="anchor">ラジオ経済</a>
+			の世界観をアプリに取り込みました。
+		</p>
 	</div>
 </section>
 
