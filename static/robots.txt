@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://humming-studio.com/sitemap.xml
