@@ -1,6 +1,10 @@
 <script lang="ts">
 	import '../app.css';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 	let { children } = $props();
+
+	// Vercel Web Analytics(訪問数・ページ別・参照元などをダッシュボードで集計)
+	injectAnalytics();
 </script>
 
 <div class="flex min-h-screen flex-col">
