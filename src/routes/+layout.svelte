@@ -1,13 +1,19 @@
 <script lang="ts">
 	import '../app.css';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { page } from '$app/state';
 	let { children } = $props();
 
 	// Vercel Web Analytics(訪問数・ページ別・参照元などをダッシュボードで集計)
 	injectAnalytics();
+
+	// トップページは独自のライトデザイン(自前のヘッダー/フッター)を使うため、
+	// 共通のダークなヘッダー/フッターはトップでは出さない。他ページは従来どおり。
+	const isHome = $derived(page.url.pathname === '/');
 </script>
 
 <div class="flex min-h-screen flex-col">
+	{#if !isHome}
 	<header
 		class="sticky top-0 z-50 border-b border-surface-800 bg-surface-950/80 backdrop-blur"
 	>
@@ -34,11 +40,13 @@
 			</div>
 		</nav>
 	</header>
+	{/if}
 
 	<main class="flex-1">
 		{@render children()}
 	</main>
 
+	{#if !isHome}
 	<footer class="border-t border-surface-800">
 		<div
 			class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-8 text-sm text-surface-400"
@@ -53,4 +61,5 @@
 			<span class="ml-auto">© 2026 tsunagibito LLC</span>
 		</div>
 	</footer>
+	{/if}
 </div>
