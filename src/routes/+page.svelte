@@ -15,9 +15,9 @@
 	];
 	// 実機スクリーンショット(iPhone)
 	const shots = [
-		{ src: '/shots/iphone-editor.jpg', caption: 'ブロックを消すだけの編集。連結 FAB とジョグで再生位置も指先で。' },
-		{ src: '/shots/iphone-chapters.jpg', caption: 'AI が話題ごとに目次(チャプター)を自動生成。' },
-		{ src: '/shots/iphone-mixer.jpg', caption: '3バンド EQ・パン・フェーダーの本格ミキサーを内蔵。' }
+		{ src: '/shots/iphone-editor.jpg', caption: '話した内容がブロックに。消すだけで編集、話者もマイクごとに自動で分かれる。' },
+		{ src: '/shots/iphone-mixer.jpg', caption: '3バンド EQ・パン・フェーダーの本格ミキサーを内蔵。' },
+		{ src: '/shots/iphone-publish.jpg', caption: '公開すれば Spotify や Apple Podcasts へ。RSS はこちらで用意。' }
 	];
 	function pill(mic: string) {
 		return mic === 'leaf'
@@ -280,7 +280,7 @@
 	<div class="mx-auto max-w-6xl px-6 py-20">
 		<h2 class="text-center text-3xl font-bold">実際の画面</h2>
 		<p class="mx-auto mt-3 max-w-xl text-center text-surface-300">
-			iPhone 一台で、収録から編集・ミックスまで。すべて実際のアプリ画面です。
+			iPhone・iPad・Mac、同じプロジェクトをどこでも。すべて実際のアプリ画面です。
 		</p>
 		<div class="mt-12 flex flex-wrap items-start justify-center gap-8 sm:gap-10">
 			{#each shots as s}
@@ -301,6 +301,42 @@
 				</figure>
 			{/each}
 		</div>
+
+		<!-- iPad / Mac -->
+		<div class="mx-auto mt-16 grid max-w-5xl items-end gap-8 md:grid-cols-2 md:gap-10">
+			<figure>
+				<div
+					class="rounded-[1.4rem] border-[10px] border-[#050f0a] bg-[#050f0a] shadow-2xl shadow-[#298C5C]/25"
+				>
+					<img
+						src="/shots/ipad-editor.jpg"
+						alt="iPad の編集画面"
+						loading="lazy"
+						class="w-full rounded-[0.7rem]"
+					/>
+				</div>
+				<figcaption class="mx-auto mt-4 max-w-md text-center text-sm text-surface-400">
+					iPad なら一覧性そのまま、大きな画面で一気に整える。
+				</figcaption>
+			</figure>
+			<figure>
+				<div
+					class="overflow-hidden rounded-xl border border-[#1c4b38] bg-[#050f0a] shadow-2xl shadow-[#298C5C]/25"
+				>
+					<img src="/shots/mac-editor.jpg" alt="Mac の編集画面" loading="lazy" class="w-full" />
+				</div>
+				<figcaption class="mx-auto mt-4 max-w-md text-center text-sm text-surface-400">
+					Mac でも同じプロジェクト。iCloud で iPhone ⇄ iPad ⇄ Mac を行き来。
+				</figcaption>
+			</figure>
+		</div>
+
+		<p class="mx-auto mt-10 text-center text-sm text-surface-400">
+			<span class="badge preset-tonal-primary-500">iPhone</span>
+			<span class="badge preset-tonal-primary-500">iPad</span>
+			<span class="badge preset-tonal-primary-500">Mac</span>
+			対応 ・ 収録も編集も公開も、端末を選ばず。
+		</p>
 	</div>
 </section>
 
