@@ -228,7 +228,7 @@
 				<h2>{bd('これは、実機の画面です。')}</h2>
 				<p class="hs-lede">
 					{bd(
-						'iPhone・iPad・Mac、同じプロジェクトをどこでも。モックではなく、いま動いているアプリのスクリーンショットを並べています。'
+						'iPhone・iPad・Mac、それぞれの画面に最適化。モックではなく、いま動いているアプリのスクリーンショットを並べています。'
 					)}
 				</p>
 			</div>
@@ -262,7 +262,7 @@
 				</div>
 				<figcaption class="hs-cap hs-lineup-cap">
 					{bd(
-						'一番広い Mac、横画面で広がる iPad。画面の広さに合わせてレイアウトが変わり、一覧性も操作もそのまま。同じプロジェクトを、iCloud で iPhone ⇄ iPad ⇄ Mac で行き来。'
+						'一番広い Mac、横画面で広がる iPad。画面の広さに合わせてレイアウトが変わり、一覧性も操作もそのまま。'
 					)}
 				</figcaption>
 			</figure>
@@ -322,11 +322,11 @@
 				<h2>iPhone ⇄ iPad ⇄ Mac。</h2>
 				<p>
 					{bd(
-						'iCloud で、同じプロジェクトをどの端末でも続きから。iPhone はワイヤレスカメラにもなり、収録から編集まで手元の道具だけで完結します。'
+						'iPhone・iPad・Mac、どれでも収録から編集まで。iPhone をワイヤレスカメラにすれば、話しながら映像も一緒に収録できます。'
 					)}
 				</p>
 				<div class="hs-chips">
-					<span class="hs-chip">iCloud 同期</span>
+					<span class="hs-chip">iPhone・iPad・Mac</span>
 					<span class="hs-chip">ワイヤレスカメラ</span>
 					<span class="hs-chip">非破壊編集</span>
 				</div>
