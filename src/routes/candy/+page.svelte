@@ -70,7 +70,7 @@
 		</div>
 	</div>
 
-	<a class="cw-btn cw-sticky-cta" href={TF} use:stickyCTA aria-label="ベータに参加">ベータに参加 ♡</a>
+	<a class="cw-btn cw-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す ♡</a>
 
 	<header class="cw-hero" data-hero>
 		<span class="cw-deco cw-deco-1" use:parallax={{ speed: 0.16, max: 90 }} aria-hidden="true">♡</span>
@@ -84,7 +84,7 @@
 					<span class="cw-x">×</span>
 					<span class="cw-brand-media">CANDY&nbsp;WAVE</span>
 				</div>
-				<a class="cw-btn cw-nav-cta" href={TF}>ベータに参加 ♡</a>
+				<a class="cw-btn cw-nav-cta" href={TF}>無料で試す ♡</a>
 			</nav>
 
 			<div class="cw-hero-grid">
@@ -95,7 +95,7 @@
 						むずかしい波形編集は、もうバイバイ。話した内容がぜんぶ文字になって、いらない一行を消すだけ。音も、同時に撮った映像も、おなじ操作でカットできちゃう。
 					</p>
 					<div class="cw-cta">
-						<a class="cw-btn" href={TF}>TestFlight で試す →</a>
+						<a class="cw-btn" href={TF}>無料で試す →</a>
 						<a class="cw-btn cw-btn-ghost" href="#screen">アプリを見る</a>
 					</div>
 					<div class="cw-meta">収録 → 文字起こし → 編集 → 配信</div>
@@ -151,7 +151,7 @@
 				<h2>あなたも、パーソナリティに ♡</h2>
 				<p>収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。</p>
 				<div class="cw-cta">
-					<a class="cw-btn cw-btn-lg" href={TF}>TestFlight ベータに参加 →</a>
+					<a class="cw-btn cw-btn-lg" href={TF}>無料で試す →</a>
 				</div>
 				<a class="cw-back" href={CANDY}>← CANDY WAVE にもどる</a>
 			</div>

@@ -102,7 +102,7 @@
 </svelte:head>
 
 <div class="hs">
-	<a class="hs-btn hs-btn-honey hs-sticky-cta" href={TF} use:stickyCTA aria-label="TestFlight ベータに参加">TestFlight ベータに参加</a>
+	<a class="hs-btn hs-btn-honey hs-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す</a>
 
 	<header class="hs-hero" id="top" data-hero>
 		<div class="hs-wrap">
@@ -115,7 +115,7 @@
 					<a href="#essence">考え方</a>
 					<a href="#screens">実際の画面</a>
 					<a href="#features">機能</a>
-					<a class="hs-btn hs-btn-honey hs-nav-cta" href={TF}>ベータに参加</a>
+					<a class="hs-btn hs-btn-honey hs-nav-cta" href={TF}>無料で試す</a>
 				</div>
 			</nav>
 
@@ -129,7 +129,7 @@
 						収録すると、すべての発話がその場で文字に。要らない一行を消せば、音声も、同時に撮った映像も、まったく同じ操作でカットされます。波形とにらめっこする編集は、もう要りません。
 					</p>
 					<div class="hs-hero-cta hs-rise" style="animation-delay:.32s">
-						<a class="hs-btn hs-btn-honey" href={TF}>TestFlight で試す</a>
+						<a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a>
 						<a class="hs-btn hs-btn-ghost" href="#screens">実際の画面を見る</a>
 					</div>
 					<div class="hs-hero-meta hs-rise" style="animation-delay:.42s">
@@ -371,7 +371,7 @@
 			<p>
 				収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。
 			</p>
-			<div class="hs-hero-cta"><a class="hs-btn hs-btn-honey" href={TF}>TestFlight ベータに参加</a></div>
+			<div class="hs-hero-cta"><a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a></div>
 			<p class="hs-cta-fine">RSS での配信・既存番組の移行にも対応 ・ 合同会社ツナギビト</p>
 		</div>
 	</section>

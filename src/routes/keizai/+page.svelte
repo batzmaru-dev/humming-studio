@@ -46,7 +46,7 @@
 		</div>
 	</div>
 
-	<a class="fm-btn fm-sticky-cta" href={TF} use:stickyCTA aria-label="ベータに参加">ベータに参加</a>
+	<a class="fm-btn fm-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す</a>
 
 	<header class="fm-hero" data-hero>
 		<div class="fm-wrap">
@@ -56,7 +56,7 @@
 					<span class="fm-x">×</span>
 					<span class="fm-media">RADIO&nbsp;KEIZAI</span>
 				</div>
-				<a class="fm-btn fm-nav-cta" href={TF}>ベータに参加</a>
+				<a class="fm-btn fm-nav-cta" href={TF}>無料で試す</a>
 			</nav>
 
 			<div class="fm-hero-grid">
@@ -68,7 +68,7 @@
 						波形とにらめっこする編集は、もう終わり。収録すると発話がすべて文字になり、要らない一行を消すだけで、音も、同時に撮った映像もカットされる。ラジオ経済の硬派な佇まいのまま、番組づくりを。
 					</p>
 					<div class="fm-cta">
-						<a class="fm-btn" href={TF}>TestFlight で試す</a>
+						<a class="fm-btn" href={TF}>無料で試す</a>
 						<a class="fm-btn fm-btn-ghost" href="#screen">実機を見る</a>
 					</div>
 					<div class="fm-meta">RECORD → TRANSCRIBE → EDIT → PUBLISH</div>
@@ -125,7 +125,7 @@
 			<h2>話せる人なら、誰でも。</h2>
 			<p>収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。</p>
 			<div class="fm-cta fm-cta-center">
-				<a class="fm-btn fm-btn-lg" href={TF}>TestFlight ベータに参加</a>
+				<a class="fm-btn fm-btn-lg" href={TF}>無料で試す</a>
 			</div>
 			<a class="fm-back" href={KEIZAI}>← ラジオ経済にもどる</a>
 		</div>
