@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { reveal, stagger, parallax, stickyCTA } from '$lib/motion';
+	import { bd } from '$lib/budoux';
 
 	// トップページ = Humming Studio ランディング(ライト/森のエディトリアル)。
 	// 共通レイアウトのダークなヘッダー/フッターはトップでは非表示(+layout.svelte)。
@@ -126,7 +127,9 @@
 					</div>
 					<h1 class="hs-rise" style="animation-delay:.12s">話した言葉で、<br />編集する。</h1>
 					<p class="hs-hero-lead hs-rise" style="animation-delay:.22s">
-						収録すると、すべての発話がその場で文字に。要らない一行を消せば、音声も、同時に撮った映像も、まったく同じ操作でカットされます。波形とにらめっこする編集は、もう要りません。
+						{bd(
+							'収録すると、すべての発話がその場で文字に。要らない一行を消せば、音声も、同時に撮った映像も、まったく同じ操作でカットされます。波形とにらめっこする編集は、もう要りません。'
+						)}
 					</p>
 					<div class="hs-hero-cta hs-rise" style="animation-delay:.32s">
 						<a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a>
@@ -155,17 +158,21 @@
 	<section class="hs-section hs-essence" id="essence">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
-				<h2>波形ではなく、<br />文章を編集する。</h2>
+				<h2>{bd('波形ではなく、')}<br />{bd('文章を編集する。')}</h2>
 			</div>
 			<div class="hs-essence-grid">
 				<div class="hs-essence-body">
 					<p>
-						従来のポッドキャスト編集は、無音の波形を目で探し、コンマ数秒単位でカット位置を合わせる職人作業でした。この工程が、番組を続けられなくなる最大の壁です。
+						{bd(
+							'従来のポッドキャスト編集は、無音の波形を目で探し、コンマ数秒単位でカット位置を合わせる職人作業でした。この工程が、番組を続けられなくなる最大の壁です。'
+						)}
 					</p>
 					<p>
-						Humming Studio では、発話がひとつずつ「ブロック」になります。言い間違い、長すぎる沈黙、要らない相槌——テキストを一行消すだけで、音声も、同時に撮った映像も、まったく同じ操作で切れる。編集の熟練度に関係なく、原稿を読み直すのと同じ感覚で番組が仕上がります。
+						{bd(
+							'Humming Studio では、発話がひとつずつ「ブロック」になります。言い間違い、長すぎる沈黙、要らない相槌——テキストを一行消すだけで、音声も、同時に撮った映像も、まったく同じ操作で切れる。編集の熟練度に関係なく、原稿を読み直すのと同じ感覚で番組が仕上がります。'
+						)}
 					</p>
-					<p class="hs-pull">「編集できる人」だけの世界から、「話せる人なら、誰でも」の世界へ。</p>
+					<p class="hs-pull">{bd('「編集できる人」だけの世界から、「話せる人なら、誰でも」の世界へ。')}</p>
 				</div>
 				<div class="hs-demo" aria-hidden="true" use:parallax={{ speed: 0.05, max: 20 }}>
 					<div class="hs-demo-top"><span>TRANSCRIPT</span><span class="t">00:14 – 00:22</span></div>
@@ -199,30 +206,36 @@
 
 	<section class="hs-section hs-manifesto">
 		<div class="hs-wrap hs-mani-inner" use:stagger={{ step: 140 }}>
-			<h2>おもしろい話ができる人は、<br />もう、たくさんいる。</h2>
+			<h2>{bd('おもしろい話ができる人は、')}<br />{bd('もう、たくさんいる。')}</h2>
 			<p>
-				ラジオやポッドキャストを自分たちで運営するなかで、何度も見てきました。収録は簡単なのに、編集で心が折れる。せっかく良い話ができても、公開までのハードルが高すぎて、番組が続かない。
+				{bd(
+					'ラジオやポッドキャストを自分たちで運営するなかで、何度も見てきました。収録は簡単なのに、編集で心が折れる。せっかく良い話ができても、公開までのハードルが高すぎて、番組が続かない。'
+				)}
 			</p>
 			<p>
-				足りないのは才能じゃなくて、届けるための道具でした。「編集できる人」だけの特権を、「話せる人なら、誰でも」に。だから私たちは、話すだけで届く場所をつくっています。
+				{bd(
+					'足りないのは才能じゃなくて、届けるための道具でした。「編集できる人」だけの特権を、「話せる人なら、誰でも」に。だから私たちは、話すだけで届く場所をつくっています。'
+				)}
 			</p>
-			<p class="hs-mani-close">あなたの声が、まだ会っていない誰かに届きますように。</p>
+			<p class="hs-mani-close">{bd('あなたの声が、まだ会っていない誰かに届きますように。')}</p>
 		</div>
 	</section>
 
 	<section class="hs-section hs-gallery" id="screens">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
-				<h2>これは、実機の画面です。</h2>
+				<h2>{bd('これは、実機の画面です。')}</h2>
 				<p class="hs-lede">
-					iPhone・iPad・Mac、同じプロジェクトをどこでも。モックではなく、いま動いているアプリのスクリーンショットを並べています。
+					{bd(
+						'iPhone・iPad・Mac、同じプロジェクトをどこでも。モックではなく、いま動いているアプリのスクリーンショットを並べています。'
+					)}
 				</p>
 			</div>
 			<div class="hs-plate-row" use:stagger>
 				{#each shots as s}
 					<figure class="hs-plate">
 						<div class="hs-plate-phone"><img src={s.src} alt={s.caption} loading="lazy" /></div>
-						<figcaption class="hs-cap"><b>{s.label}</b>{s.caption}</figcaption>
+						<figcaption class="hs-cap"><b>{s.label}</b>{bd(s.caption)}</figcaption>
 					</figure>
 				{/each}
 			</div>
@@ -247,7 +260,9 @@
 					</div>
 				</div>
 				<figcaption class="hs-cap hs-lineup-cap">
-					一番広い Mac、横画面で広がる iPad。画面の広さに合わせてレイアウトが変わり、一覧性も操作もそのまま。同じプロジェクトを、iCloud で iPhone ⇄ iPad ⇄ Mac で行き来。
+					{bd(
+						'一番広い Mac、横画面で広がる iPad。画面の広さに合わせてレイアウトが変わり、一覧性も操作もそのまま。同じプロジェクトを、iCloud で iPhone ⇄ iPad ⇄ Mac で行き来。'
+					)}
 				</figcaption>
 			</figure>
 		</div>
@@ -256,13 +271,13 @@
 	<section class="hs-section hs-features" id="features">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
-				<h2>一台に、スタジオを。</h2>
+				<h2>{bd('一台に、スタジオを。')}</h2>
 			</div>
 			<div class="hs-feat-grid" use:stagger>
 				{#each features as f}
 					<div class="hs-feat">
-						<h3>{f.title}</h3>
-						<p>{f.desc}</p>
+						<h3>{bd(f.title)}</h3>
+						<p>{bd(f.desc)}</p>
 					</div>
 				{/each}
 			</div>
@@ -272,17 +287,23 @@
 	<section class="hs-section hs-reach">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
-				<h2>作るだけじゃない。<br />ちゃんと、見つけてもらえる。</h2>
+				<h2>{bd('作るだけじゃない。')}<br />{bd('ちゃんと、見つけてもらえる。')}</h2>
 				<p class="hs-lede">
-					ただ公開するだけでは、届きません。Humming Studio は、探している人に見つけてもらうための情報を、番組に添えて配信します。
+					{bd(
+						'ただ公開するだけでは、届きません。Humming Studio は、探している人に見つけてもらうための情報を、番組に添えて配信します。'
+					)}
 				</p>
 			</div>
 			<div class="hs-reach-body">
 				<p>
-					Podcast 2.0 のリッチなメタ情報つきで配信。チャプター、番組の恒久 ID、出演者——番組を探すアプリやサービスが、あなたの回を正しく理解できます。
+					{bd(
+						'Podcast 2.0 のリッチなメタ情報つきで配信。チャプター、番組の恒久 ID、出演者——番組を探すアプリやサービスが、あなたの回を正しく理解できます。'
+					)}
 				</p>
 				<p>
-					さらに、収録すれば音声はそのまま文字に。内容がテキストで残るから、あとから探すのも、読み返すのも簡単。ただ届けるだけでなく、見つけてもらう配信を。
+					{bd(
+						'さらに、収録すれば音声はそのまま文字に。内容がテキストで残るから、あとから探すのも、読み返すのも簡単。ただ届けるだけでなく、見つけてもらう配信を。'
+					)}
 				</p>
 			</div>
 			<div class="hs-reach-tags" use:stagger={{ step: 70 }}>
@@ -299,7 +320,9 @@
 			<div>
 				<h2>iPhone ⇄ iPad ⇄ Mac。</h2>
 				<p>
-					iCloud で、同じプロジェクトをどの端末でも続きから。iPhone はワイヤレスカメラにもなり、収録から編集まで手元の道具だけで完結します。
+					{bd(
+						'iCloud で、同じプロジェクトをどの端末でも続きから。iPhone はワイヤレスカメラにもなり、収録から編集まで手元の道具だけで完結します。'
+					)}
 				</p>
 				<div class="hs-chips">
 					<span class="hs-chip">iCloud 同期</span>
@@ -320,9 +343,11 @@
 	<section class="hs-section hs-themes" id="themes">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
-				<h2>見た目は、3つの世界から選べる。</h2>
+				<h2>{bd('見た目は、3つの世界から選べる。')}</h2>
 				<p class="hs-lede">
-					「録る・読む・消す」の編集体験はそのままに、好みのデザインで収録・編集できます。初回に選んで、あとから設定でいつでも切り替え。
+					{bd(
+						'「録る・読む・消す」の編集体験はそのままに、好みのデザインで収録・編集できます。初回に選んで、あとから設定でいつでも切り替え。'
+					)}
 				</p>
 			</div>
 			<div class="hs-theme-grid" use:stagger>
@@ -345,31 +370,31 @@
 						</div>
 						<figcaption class="hs-theme-cap">
 							<span class="hs-theme-name" style={t.font}>{t.name}</span>
-							<p>{t.desc}</p>
+							<p>{bd(t.desc)}</p>
 						</figcaption>
 					</figure>
 				{/each}
 			</div>
 			<p class="hs-theme-note">
-				GREEN は現行のデザイン。CANDY はポップな原宿系ラジオ、KEIZAI は
+				{bd('GREEN は現行のデザイン。CANDY はポップな原宿系ラジオ、KEIZAI は')}
 				<a href="https://radio-keizai.com" target="_blank" rel="noopener">ラジオ経済</a>
-				の世界観をアプリに取り込みました。提携メディアに掲載されると、番組はより多くのリスナーへ届きます。
+				{bd('の世界観をアプリに取り込みました。提携メディアに掲載されると、番組はより多くのリスナーへ届きます。')}
 			</p>
 		</div>
 	</section>
 
 	<section class="hs-section hs-hook">
 		<div class="hs-wrap" use:stagger={{ step: 120 }}>
-			<h2>ボイスメモで、ポッドキャスト?<br />——もう、終わりにしよう。</h2>
-			<p class="hs-hook-sub">Humming Studio で録れば、話した言葉が、そのまま番組になる。</p>
+			<h2>{bd('ボイスメモで、ポッドキャスト?')}<br />{bd('——もう、終わりにしよう。')}</h2>
+			<p class="hs-hook-sub">{bd('Humming Studio で録れば、話した言葉が、そのまま番組になる。')}</p>
 		</div>
 	</section>
 
 	<section class="hs-section hs-cta" id="testflight">
 		<div class="hs-wrap">
-			<h2>話せる人なら、誰でも。</h2>
+			<h2>{bd('話せる人なら、誰でも。')}</h2>
 			<p>
-				収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。
+				{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}
 			</p>
 			<div class="hs-hero-cta"><a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a></div>
 			<p class="hs-cta-fine">RSS での配信・既存番組の移行にも対応 ・ 合同会社ツナギビト</p>
@@ -398,6 +423,11 @@
 </div>
 
 <style>
+	/* 和文の改行を BudouX(ZWSP)の文節境界だけに限定。UI(span/ボタン等)には効かせない。 */
+	.hs :where(h1, h2, h3, p, figcaption) {
+		word-break: keep-all;
+		overflow-wrap: anywhere;
+	}
 	.hs {
 		--paper: #f1f2ec;
 		--paper2: #e8eae0;

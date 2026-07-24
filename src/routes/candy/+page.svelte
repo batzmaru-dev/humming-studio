@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { reveal, stagger, parallax, stickyCTA } from '$lib/motion';
+	import { bd } from '$lib/budoux';
 
 	// CANDY WAVE × Humming Studio 専用ランディング。
 	// CANDY WAVE の世界観(ゆめかわ・マスコット「もくもくちゃん」・カーテン遷移)を
@@ -90,9 +91,11 @@
 			<div class="cw-hero-grid">
 				<div class="cw-hero-copy">
 					<div class="cw-eyebrow">CANDY WAVE から、ようこそ ♡</div>
-					<h1>話した言葉で、<br />編集する。</h1>
+					<h1>{bd('話した言葉で、')}<br />{bd('編集する。')}</h1>
 					<p class="cw-lead">
-						むずかしい波形編集は、もうバイバイ。話した内容がぜんぶ文字になって、いらない一行を消すだけ。音も、同時に撮った映像も、おなじ操作でカットできちゃう。
+						{bd(
+							'むずかしい波形編集は、もうバイバイ。話した内容がぜんぶ文字になって、いらない一行を消すだけ。音も、同時に撮った映像も、おなじ操作でカットできちゃう。'
+						)}
 					</p>
 					<div class="cw-cta">
 						<a class="cw-btn" href={TF}>無料で試す →</a>
@@ -112,16 +115,17 @@
 		<div class="cw-wrap">
 			<div class="cw-sec-head" use:reveal>
 				<div class="cw-kicker">☁ Your world</div>
-				<h2>CANDY WAVE の世界のまま、収録できる。</h2>
+				<h2>{bd('CANDY WAVE の世界のまま、収録できる。')}</h2>
 				<p class="cw-sub">
-					アプリのデザインは <b>GREEN / CANDY / KEIZAI</b> から選べます。CANDY を選べば、収録も編集も、このかわいい世界のまま ♡
+					{bd('アプリのデザインは')} <b>GREEN / CANDY / KEIZAI</b>
+					{bd('から選べます。CANDY を選べば、収録も編集も、このかわいい世界のまま ♡')}
 				</p>
 			</div>
 			<figure class="cw-shot">
 				<div class="cw-ipad" use:parallax={{ speed: 0.06, max: 26 }}>
 					<img src="/shots/ipad-candy-editor.jpg" alt="CANDY テーマの Humming Studio エディタ画面" loading="lazy" />
 				</div>
-				<figcaption>話した内容がブロックに。ピンクの波形も、消すだけで音がカットされる。</figcaption>
+				<figcaption>{bd('話した内容がブロックに。ピンクの波形も、消すだけで音がカットされる。')}</figcaption>
 			</figure>
 		</div>
 	</section>
@@ -130,14 +134,14 @@
 		<div class="cw-wrap">
 			<div class="cw-sec-head" use:reveal>
 				<div class="cw-kicker">♡ できること</div>
-				<h2>話せるなら、もう作れる。</h2>
+				<h2>{bd('話せるなら、もう作れる。')}</h2>
 			</div>
 			<div class="cw-feat-grid" use:stagger>
 				{#each feats as f}
 					<div class="cw-card">
 						<div class="cw-card-emoji">{f.emoji}</div>
-						<h3>{f.title}</h3>
-						<p>{f.desc}</p>
+						<h3>{bd(f.title)}</h3>
+						<p>{bd(f.desc)}</p>
 					</div>
 				{/each}
 			</div>
@@ -148,8 +152,8 @@
 		<div class="cw-wrap">
 			<div class="cw-final-card" use:reveal>
 				{@render mascot(120, 'cw-float')}
-				<h2>あなたも、パーソナリティに ♡</h2>
-				<p>収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。</p>
+				<h2>{bd('あなたも、パーソナリティに ♡')}</h2>
+				<p>{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}</p>
 				<div class="cw-cta">
 					<a class="cw-btn cw-btn-lg" href={TF}>無料で試す →</a>
 				</div>
@@ -173,6 +177,11 @@
 </div>
 
 <style>
+	/* 和文の改行を BudouX(ZWSP)の文節境界だけに限定。UI(span/ボタン等)には効かせない。 */
+	.cw :where(h1, h2, h3, p, figcaption) {
+		word-break: keep-all;
+		overflow-wrap: anywhere;
+	}
 	.cw {
 		--cw-bg: #fff7fb;
 		--cw-ink: #6b5b8e;
