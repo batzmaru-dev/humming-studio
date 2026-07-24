@@ -7,13 +7,15 @@
 	// Vercel Web Analytics(訪問数・ページ別・参照元などをダッシュボードで集計)
 	injectAnalytics();
 
-	// トップページは独自のライトデザイン(自前のヘッダー/フッター)を使うため、
-	// 共通のダークなヘッダー/フッターはトップでは出さない。他ページは従来どおり。
-	const isHome = $derived(page.url.pathname === '/');
+	// トップ & 各媒体専用LP(/candy /keizai)は独自の自前ヘッダー/フッターを使うため、
+	// 共通のダークなヘッダー/フッターはこれらでは出さない。他ページは従来どおり。
+	const ownChrome = $derived(
+		['/', '/candy', '/keizai'].includes(page.url.pathname)
+	);
 </script>
 
 <div class="flex min-h-screen flex-col">
-	{#if !isHome}
+	{#if !ownChrome}
 	<header
 		class="sticky top-0 z-50 border-b border-surface-800 bg-surface-950/80 backdrop-blur"
 	>
@@ -46,7 +48,7 @@
 		{@render children()}
 	</main>
 
-	{#if !isHome}
+	{#if !ownChrome}
 	<footer class="border-t border-surface-800">
 		<div
 			class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-8 text-sm text-surface-400"
