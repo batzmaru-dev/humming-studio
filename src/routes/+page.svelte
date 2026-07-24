@@ -501,6 +501,7 @@
 		transition: all 0.2s;
 		letter-spacing: 0.02em;
 		line-height: 1;
+		white-space: nowrap;
 	}
 	.hs-btn-honey {
 		background: var(--honey);

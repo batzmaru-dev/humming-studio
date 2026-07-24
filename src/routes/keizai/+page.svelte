@@ -227,6 +227,7 @@
 		border-radius: 0;
 		padding: 13px 26px;
 		line-height: 1;
+		white-space: nowrap;
 	}
 	.fm-btn:hover {
 		color: var(--fm-paper);

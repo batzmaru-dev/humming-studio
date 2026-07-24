@@ -256,6 +256,7 @@
 			transform 0.12s ease,
 			box-shadow 0.12s ease;
 		line-height: 1;
+		white-space: nowrap;
 	}
 	.cw-btn:hover {
 		transform: translateY(1px);
