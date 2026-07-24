@@ -92,6 +92,7 @@
 	];
 
 	const TF = 'https://testflight.apple.com/join/s8DBaCfG';
+	const MAC = '/HummingStudio.dmg';
 </script>
 
 <svelte:head>
@@ -396,8 +397,14 @@
 			<p>
 				{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}
 			</p>
-			<div class="hs-hero-cta"><a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a></div>
-			<p class="hs-cta-fine">RSS での配信・既存番組の移行にも対応 ・ 合同会社ツナギビト</p>
+			<div class="hs-hero-cta">
+				<a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a>
+				<a class="hs-btn hs-btn-ghost" href={MAC} download>Mac 版をダウンロード</a>
+			</div>
+			<p class="hs-cta-fine">
+				iPhone・iPad は TestFlight ／ Mac は直接ダウンロード(.dmg・macOS 14 以降)・ RSS
+				配信・既存番組の移行にも対応 ・ 合同会社ツナギビト
+			</p>
 		</div>
 	</section>
 
