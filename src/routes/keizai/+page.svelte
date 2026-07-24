@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { reveal, stagger, parallax, stickyCTA } from '$lib/motion';
+
 	// ラジオ経済(Radio KEIZAI)× Humming Studio 専用ランディング。
 	// クリーム×朱の現代エディトリアル(Archivo / Zen Kaku Gothic New / DM Mono、
 	// 角なし・2px 罫線・マーキー)で、ラジオ経済の硬派な佇まいをそのまま持ち込む。
@@ -44,7 +46,9 @@
 		</div>
 	</div>
 
-	<header class="fm-hero">
+	<a class="fm-btn fm-sticky-cta" href={TF} use:stickyCTA aria-label="ベータに参加">ベータに参加</a>
+
+	<header class="fm-hero" data-hero>
 		<div class="fm-wrap">
 			<nav class="fm-nav">
 				<div class="fm-brand">
@@ -69,7 +73,7 @@
 					</div>
 					<div class="fm-meta">RECORD → TRANSCRIBE → EDIT → PUBLISH</div>
 				</div>
-				<aside class="fm-quote">
+				<aside class="fm-quote" use:reveal={{ y: 20 }}>
 					<div class="fm-quote-label">THE THESIS</div>
 					<blockquote>「編集できる人」だけの世界から、「話せる人なら、誰でも」の世界へ。</blockquote>
 					<div class="fm-quote-rule"></div>
@@ -81,7 +85,7 @@
 
 	<section class="fm-section fm-screen" id="screen">
 		<div class="fm-wrap">
-			<div class="fm-sec-head">
+			<div class="fm-sec-head" use:reveal>
 				<div class="fm-kicker">YOUR WORLD — 世界観</div>
 				<h2>ラジオ経済の佇まいのまま、収録する。</h2>
 				<p class="fm-sub">
@@ -89,7 +93,7 @@
 				</p>
 			</div>
 			<figure class="fm-shot">
-				<div class="fm-shot-frame">
+				<div class="fm-shot-frame" use:parallax={{ speed: 0.07, max: 30 }}>
 					<img src="/shots/ipad-keizai-editor.jpg" alt="KEIZAI テーマの Humming Studio エディタ画面" loading="lazy" />
 				</div>
 				<figcaption>話した内容がブロックに。朱の波形も、テキストを消すと同じ位置でカットされる。</figcaption>
@@ -99,11 +103,11 @@
 
 	<section class="fm-section fm-feats">
 		<div class="fm-wrap">
-			<div class="fm-sec-head">
+			<div class="fm-sec-head" use:reveal>
 				<div class="fm-kicker">FEATURES — 機能</div>
 				<h2>一台に、スタジオを。</h2>
 			</div>
-			<div class="fm-feat-grid">
+			<div class="fm-feat-grid" use:stagger={{ step: 80 }}>
 				{#each feats as f}
 					<article class="fm-feat">
 						<div class="fm-feat-top"><span class="fm-feat-no">{f.no}</span><span class="fm-feat-en">{f.en}</span></div>
@@ -604,6 +608,33 @@
 		}
 		.fm-dot {
 			animation: none;
+		}
+	}
+
+	/* モバイル: ヒーローを過ぎたら下部に張り付く CTA */
+	.fm-sticky-cta {
+		position: fixed;
+		left: 16px;
+		right: 16px;
+		bottom: 14px;
+		z-index: 60;
+		display: none;
+		justify-content: center;
+		box-shadow: 4px 4px 0 var(--fm-verm);
+		transform: translateY(190%);
+		transition: transform 0.36s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.fm-sticky-cta:global(.on) {
+		transform: translateY(0);
+	}
+	@media (max-width: 760px) {
+		.fm-sticky-cta {
+			display: inline-flex;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.fm-sticky-cta {
+			transition: none;
 		}
 	}
 

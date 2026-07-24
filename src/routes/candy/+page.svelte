@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { reveal, stagger, parallax, stickyCTA } from '$lib/motion';
+
 	// CANDY WAVE × Humming Studio 専用ランディング。
 	// CANDY WAVE の世界観(ゆめかわ・マスコット「もくもくちゃん」・カーテン遷移)を
 	// そのまま持ち込み、アプリも CANDY テーマの実機画面で見せる。
@@ -68,7 +70,13 @@
 		</div>
 	</div>
 
-	<header class="cw-hero">
+	<a class="cw-btn cw-sticky-cta" href={TF} use:stickyCTA aria-label="ベータに参加">ベータに参加 ♡</a>
+
+	<header class="cw-hero" data-hero>
+		<span class="cw-deco cw-deco-1" use:parallax={{ speed: 0.16, max: 90 }} aria-hidden="true">♡</span>
+		<span class="cw-deco cw-deco-2" use:parallax={{ speed: -0.1, max: 70 }} aria-hidden="true">☁</span>
+		<span class="cw-deco cw-deco-3" use:parallax={{ speed: 0.22, max: 110 }} aria-hidden="true">★</span>
+		<span class="cw-deco cw-deco-4" use:parallax={{ speed: -0.14, max: 80 }} aria-hidden="true">✦</span>
 		<div class="cw-wrap">
 			<nav class="cw-nav">
 				<div class="cw-brand">
@@ -102,7 +110,7 @@
 
 	<section class="cw-section cw-screen" id="screen">
 		<div class="cw-wrap">
-			<div class="cw-sec-head">
+			<div class="cw-sec-head" use:reveal>
 				<div class="cw-kicker">☁ Your world</div>
 				<h2>CANDY WAVE の世界のまま、収録できる。</h2>
 				<p class="cw-sub">
@@ -110,7 +118,7 @@
 				</p>
 			</div>
 			<figure class="cw-shot">
-				<div class="cw-ipad">
+				<div class="cw-ipad" use:parallax={{ speed: 0.06, max: 26 }}>
 					<img src="/shots/ipad-candy-editor.jpg" alt="CANDY テーマの Humming Studio エディタ画面" loading="lazy" />
 				</div>
 				<figcaption>話した内容がブロックに。ピンクの波形も、消すだけで音がカットされる。</figcaption>
@@ -120,11 +128,11 @@
 
 	<section class="cw-section cw-feats">
 		<div class="cw-wrap">
-			<div class="cw-sec-head">
+			<div class="cw-sec-head" use:reveal>
 				<div class="cw-kicker">♡ できること</div>
 				<h2>話せるなら、もう作れる。</h2>
 			</div>
-			<div class="cw-feat-grid">
+			<div class="cw-feat-grid" use:stagger>
 				{#each feats as f}
 					<div class="cw-card">
 						<div class="cw-card-emoji">{f.emoji}</div>
@@ -138,7 +146,7 @@
 
 	<section class="cw-section cw-final">
 		<div class="cw-wrap">
-			<div class="cw-final-card">
+			<div class="cw-final-card" use:reveal>
 				{@render mascot(120, 'cw-float')}
 				<h2>あなたも、パーソナリティに ♡</h2>
 				<p>収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。</p>
@@ -692,6 +700,78 @@
 		.cw-mascot-float.cw-float,
 		.cw-mascot-float.cw-jump {
 			animation: none;
+		}
+	}
+
+	/* 浮遊デコ(パララックス) */
+	.cw-hero {
+		position: relative;
+		overflow: hidden;
+	}
+	.cw-hero .cw-wrap {
+		position: relative;
+		z-index: 1;
+	}
+	.cw-deco {
+		position: absolute;
+		z-index: 0;
+		opacity: 0.5;
+		pointer-events: none;
+		user-select: none;
+		line-height: 1;
+	}
+	.cw-deco-1 {
+		top: 13%;
+		left: 5%;
+		font-size: 58px;
+		color: #ff9ec6;
+	}
+	.cw-deco-2 {
+		top: 18%;
+		right: 8%;
+		font-size: 92px;
+		color: #e3d7ff;
+	}
+	.cw-deco-3 {
+		bottom: 16%;
+		left: 11%;
+		font-size: 44px;
+		color: #f2b04d;
+	}
+	.cw-deco-4 {
+		bottom: 24%;
+		right: 15%;
+		font-size: 38px;
+		color: #7db8e8;
+	}
+
+	/* モバイル: ヒーローを過ぎたら下部に張り付く CTA */
+	.cw-sticky-cta {
+		position: fixed;
+		left: 16px;
+		right: 16px;
+		bottom: 14px;
+		z-index: 60;
+		display: none;
+		justify-content: center;
+		transform: translateY(170%);
+		transition: transform 0.36s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.cw-sticky-cta:global(.on) {
+		transform: translateY(0);
+	}
+	@media (max-width: 760px) {
+		.cw-sticky-cta {
+			display: inline-flex;
+		}
+		.cw-deco-2,
+		.cw-deco-4 {
+			display: none;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cw-sticky-cta {
+			transition: none;
 		}
 	}
 

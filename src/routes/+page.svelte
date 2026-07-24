@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { reveal, stagger, parallax, stickyCTA } from '$lib/motion';
+
 	// トップページ = Humming Studio ランディング(ライト/森のエディトリアル)。
 	// 共通レイアウトのダークなヘッダー/フッターはトップでは非表示(+layout.svelte)。
 
@@ -100,7 +102,9 @@
 </svelte:head>
 
 <div class="hs">
-	<header class="hs-hero" id="top">
+	<a class="hs-btn hs-btn-honey hs-sticky-cta" href={TF} use:stickyCTA aria-label="TestFlight ベータに参加">TestFlight ベータに参加</a>
+
+	<header class="hs-hero" id="top" data-hero>
 		<div class="hs-wrap">
 			<nav class="hs-nav">
 				<div class="hs-brand">
@@ -133,7 +137,7 @@
 					</div>
 				</div>
 				<div class="hs-hero-art hs-fade" style="animation-delay:.35s">
-					<div class="hs-phone">
+					<div class="hs-phone" use:parallax={{ speed: 0.05, max: 24 }}>
 						<img
 							src="/shots/iphone-editor.jpg"
 							alt="Humming Studio のブロックエディタ画面"
@@ -150,7 +154,7 @@
 
 	<section class="hs-section hs-essence" id="essence">
 		<div class="hs-wrap">
-			<div class="hs-sec-head">
+			<div class="hs-sec-head" use:reveal>
 				<h2>波形ではなく、<br />文章を編集する。</h2>
 			</div>
 			<div class="hs-essence-grid">
@@ -163,7 +167,7 @@
 					</p>
 					<p class="hs-pull">「編集できる人」だけの世界から、「話せる人なら、誰でも」の世界へ。</p>
 				</div>
-				<div class="hs-demo" aria-hidden="true">
+				<div class="hs-demo" aria-hidden="true" use:parallax={{ speed: 0.05, max: 20 }}>
 					<div class="hs-demo-top"><span>TRANSCRIPT</span><span class="t">00:14 – 00:22</span></div>
 					<div class="hs-wave">
 						<i style="height:40%"></i><i style="height:70%"></i><i style="height:55%"></i><i
@@ -194,7 +198,7 @@
 	</section>
 
 	<section class="hs-section hs-manifesto">
-		<div class="hs-wrap hs-mani-inner">
+		<div class="hs-wrap hs-mani-inner" use:stagger={{ step: 140 }}>
 			<h2>おもしろい話ができる人は、<br />もう、たくさんいる。</h2>
 			<p>
 				ラジオやポッドキャストを自分たちで運営するなかで、何度も見てきました。収録は簡単なのに、編集で心が折れる。せっかく良い話ができても、公開までのハードルが高すぎて、番組が続かない。
@@ -208,13 +212,13 @@
 
 	<section class="hs-section hs-gallery" id="screens">
 		<div class="hs-wrap">
-			<div class="hs-sec-head">
+			<div class="hs-sec-head" use:reveal>
 				<h2>これは、実機の画面です。</h2>
 				<p class="hs-lede">
 					iPhone・iPad・Mac、同じプロジェクトをどこでも。モックではなく、いま動いているアプリのスクリーンショットを並べています。
 				</p>
 			</div>
-			<div class="hs-plate-row">
+			<div class="hs-plate-row" use:stagger>
 				{#each shots as s}
 					<figure class="hs-plate">
 						<div class="hs-plate-phone"><img src={s.src} alt={s.caption} loading="lazy" /></div>
@@ -224,7 +228,7 @@
 			</div>
 			<figure class="hs-lineup-fig">
 				<div class="hs-lineup">
-					<div class="hs-dev-slot hs-dev-mac">
+					<div class="hs-dev-slot hs-dev-mac" use:parallax={{ speed: 0.04, max: 30 }}>
 						<div class="hs-mac">
 							<div class="hs-mac-screen">
 								<span class="hs-mac-cam"></span>
@@ -234,7 +238,7 @@
 						</div>
 						<span class="hs-dev-label">MAC</span>
 					</div>
-					<div class="hs-dev-slot hs-dev-ipad">
+					<div class="hs-dev-slot hs-dev-ipad" use:parallax={{ speed: 0.09, max: 46 }}>
 						<div class="hs-ipad">
 							<span class="hs-ipad-cam"></span>
 							<img src="/shots/ipad-editor-land.jpg" alt="iPad(横画面)のエディタ画面" loading="lazy" />
@@ -251,10 +255,10 @@
 
 	<section class="hs-section hs-features" id="features">
 		<div class="hs-wrap">
-			<div class="hs-sec-head">
+			<div class="hs-sec-head" use:reveal>
 				<h2>一台に、スタジオを。</h2>
 			</div>
-			<div class="hs-feat-grid">
+			<div class="hs-feat-grid" use:stagger>
 				{#each features as f}
 					<div class="hs-feat">
 						<h3>{f.title}</h3>
@@ -267,7 +271,7 @@
 
 	<section class="hs-section hs-reach">
 		<div class="hs-wrap">
-			<div class="hs-sec-head">
+			<div class="hs-sec-head" use:reveal>
 				<h2>作るだけじゃない。<br />ちゃんと、見つけてもらえる。</h2>
 				<p class="hs-lede">
 					ただ公開するだけでは、届きません。Humming Studio は、探している人に見つけてもらうための情報を、番組に添えて配信します。
@@ -281,7 +285,7 @@
 					さらに、収録すれば音声はそのまま文字に。内容がテキストで残るから、あとから探すのも、読み返すのも簡単。ただ届けるだけでなく、見つけてもらう配信を。
 				</p>
 			</div>
-			<div class="hs-reach-tags">
+			<div class="hs-reach-tags" use:stagger={{ step: 70 }}>
 				<span class="hs-reach-tag">Podcast 2.0 メタ情報</span>
 				<span class="hs-reach-tag">チャプター</span>
 				<span class="hs-reach-tag">文字起こし</span>
@@ -315,13 +319,13 @@
 
 	<section class="hs-section hs-themes" id="themes">
 		<div class="hs-wrap">
-			<div class="hs-sec-head">
+			<div class="hs-sec-head" use:reveal>
 				<h2>見た目は、3つの世界から選べる。</h2>
 				<p class="hs-lede">
 					「録る・読む・消す」の編集体験はそのままに、好みのデザインで収録・編集できます。初回に選んで、あとから設定でいつでも切り替え。
 				</p>
 			</div>
-			<div class="hs-theme-grid">
+			<div class="hs-theme-grid" use:stagger>
 				{#each themes as t}
 					<figure class="hs-theme-card">
 						<div class="hs-tm" style="background:{t.bg}">
@@ -355,7 +359,7 @@
 	</section>
 
 	<section class="hs-section hs-hook">
-		<div class="hs-wrap">
+		<div class="hs-wrap" use:stagger={{ step: 120 }}>
 			<h2>ボイスメモで、ポッドキャスト?<br />——もう、終わりにしよう。</h2>
 			<p class="hs-hook-sub">Humming Studio で録れば、話した言葉が、そのまま番組になる。</p>
 		</div>
@@ -1315,6 +1319,33 @@
 			animation: none;
 			opacity: 1;
 			transform: none;
+		}
+	}
+
+	/* モバイル: ヒーローを過ぎたら下部に張り付く CTA */
+	.hs-sticky-cta {
+		position: fixed;
+		left: 16px;
+		right: 16px;
+		bottom: 14px;
+		z-index: 60;
+		display: none;
+		justify-content: center;
+		box-shadow: 0 12px 30px -8px rgba(6, 18, 12, 0.45);
+		transform: translateY(160%);
+		transition: transform 0.36s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	.hs-sticky-cta:global(.on) {
+		transform: translateY(0);
+	}
+	@media (max-width: 760px) {
+		.hs-sticky-cta {
+			display: inline-flex;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hs-sticky-cta {
+			transition: none;
 		}
 	}
 
