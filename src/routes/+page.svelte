@@ -193,6 +193,19 @@
 		</div>
 	</section>
 
+	<section class="hs-section hs-manifesto">
+		<div class="hs-wrap hs-mani-inner">
+			<h2>おもしろい話ができる人は、<br />もう、たくさんいる。</h2>
+			<p>
+				ラジオやポッドキャストを自分たちで運営するなかで、何度も見てきました。収録は簡単なのに、編集で心が折れる。せっかく良い話ができても、公開までのハードルが高すぎて、番組が続かない。
+			</p>
+			<p>
+				足りないのは才能じゃなくて、届けるための道具でした。「編集できる人」だけの特権を、「話せる人なら、誰でも」に。だから私たちは、話すだけで届く場所をつくっています。
+			</p>
+			<p class="hs-mani-close">あなたの声が、まだ会っていない誰かに届きますように。</p>
+		</div>
+	</section>
+
 	<section class="hs-section hs-gallery" id="screens">
 		<div class="hs-wrap">
 			<div class="hs-sec-head">
@@ -248,6 +261,31 @@
 						<p>{f.desc}</p>
 					</div>
 				{/each}
+			</div>
+		</div>
+	</section>
+
+	<section class="hs-section hs-reach">
+		<div class="hs-wrap">
+			<div class="hs-sec-head">
+				<h2>作るだけじゃない。<br />ちゃんと、見つけてもらえる。</h2>
+				<p class="hs-lede">
+					ただ公開するだけでは、届きません。Humming Studio は、探している人に見つけてもらうための情報を、番組に添えて配信します。
+				</p>
+			</div>
+			<div class="hs-reach-body">
+				<p>
+					Podcast 2.0 のリッチなメタ情報つきで配信。チャプター、番組の恒久 ID、出演者——番組を探すアプリやサービスが、あなたの回を正しく理解できます。
+				</p>
+				<p>
+					さらに、収録すれば音声はそのまま文字に。内容がテキストで残るから、あとから探すのも、読み返すのも簡単。ただ届けるだけでなく、見つけてもらう配信を。
+				</p>
+			</div>
+			<div class="hs-reach-tags">
+				<span class="hs-reach-tag">Podcast 2.0 メタ情報</span>
+				<span class="hs-reach-tag">チャプター</span>
+				<span class="hs-reach-tag">文字起こし</span>
+				<span class="hs-reach-tag">Spotify / Apple Podcasts</span>
 			</div>
 		</div>
 	</section>
@@ -313,6 +351,13 @@
 				<a href="https://radio-keizai.com" target="_blank" rel="noopener">ラジオ経済</a>
 				の世界観をアプリに取り込みました。提携メディアに掲載されると、番組はより多くのリスナーへ届きます。
 			</p>
+		</div>
+	</section>
+
+	<section class="hs-section hs-hook">
+		<div class="hs-wrap">
+			<h2>ボイスメモで、ポッドキャスト?<br />——もう、終わりにしよう。</h2>
+			<p class="hs-hook-sub">Humming Studio で録れば、話した言葉が、そのまま番組になる。</p>
 		</div>
 	</section>
 
@@ -1079,6 +1124,88 @@
 		font-size: 13px;
 		color: var(--ink-soft);
 		line-height: 1.9;
+	}
+
+	/* MANIFESTO(想い) */
+	.hs-manifesto {
+		background: var(--pine);
+		color: var(--paper);
+	}
+	.hs-mani-inner {
+		max-width: 760px;
+	}
+	.hs-manifesto h2 {
+		font-family: var(--f-display);
+		font-weight: 700;
+		font-size: clamp(28px, 4.2vw, 44px);
+		line-height: 1.42;
+		color: var(--paper);
+	}
+	.hs-manifesto p {
+		color: #c4d0c6;
+		font-size: 16px;
+		line-height: 2.05;
+		margin: 20px 0 0;
+		max-width: 40em;
+	}
+	.hs-manifesto .hs-mani-close {
+		font-family: var(--f-display);
+		font-weight: 700;
+		font-size: clamp(19px, 2.4vw, 24px);
+		line-height: 1.7;
+		color: var(--honey2);
+		margin-top: 30px;
+	}
+
+	/* REACH(見つけてもらえる) */
+	.hs-reach {
+		background: var(--paper);
+	}
+	.hs-reach-body {
+		max-width: 44em;
+		margin-top: 6px;
+	}
+	.hs-reach-body p {
+		color: var(--ink2);
+		font-size: 16px;
+		line-height: 2.05;
+		margin: 0 0 16px;
+	}
+	.hs-reach-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 22px;
+	}
+	.hs-reach-tag {
+		font-size: 13px;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 7px 14px;
+		color: var(--ink2);
+	}
+
+	/* HOOK(パンチライン) */
+	.hs-hook {
+		background: var(--paper2);
+		text-align: center;
+	}
+	.hs-hook h2 {
+		font-family: var(--f-display);
+		font-weight: 900;
+		font-size: clamp(28px, 4.6vw, 46px);
+		line-height: 1.42;
+		letter-spacing: 0.01em;
+		color: var(--ink);
+		margin: 0 auto;
+		max-width: 22em;
+	}
+	.hs-hook-sub {
+		font-family: var(--f-display);
+		font-weight: 700;
+		font-size: clamp(18px, 2.2vw, 24px);
+		color: var(--moss);
+		margin-top: 18px;
 	}
 
 	/* CTA */

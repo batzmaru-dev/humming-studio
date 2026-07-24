@@ -1,9 +1,26 @@
+import { createHash } from 'node:crypto';
 import type { Show, Episode } from './store';
 
-// RSS 2.0 + iTunes 名前空間 + Podlove Simple Chapters。
+// RSS 2.0 + iTunes 名前空間 + Podlove Simple Chapters + Podcasting 2.0 名前空間。
 // フィード URL は恒久(feed.humming-studio.com 移行時も itunes:new-feed-url で追随)。
 
 const SITE = 'https://humming-studio.com';
+
+// Podcasting 2.0 の podcast:guid は「プロトコルを除いたフィード URL」の UUIDv5。
+// namespace は Podcast Index 規定の固定値。番組ごとに恒久で安定する(再生成しても不変)。
+const PODCAST_NS = 'ead4c236-bf58-58c6-a2c6-a6b28d128cb6';
+function uuidv5(name: string): string {
+	const ns = Buffer.from(PODCAST_NS.replaceAll('-', ''), 'hex');
+	const bytes = createHash('sha1')
+		.update(ns)
+		.update(Buffer.from(name, 'utf8'))
+		.digest()
+		.subarray(0, 16);
+	bytes[6] = (bytes[6] & 0x0f) | 0x50; // version 5
+	bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant RFC4122
+	const h = bytes.toString('hex');
+	return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+}
 
 function esc(s: string): string {
 	return s
@@ -64,10 +81,20 @@ export function buildFeed(show: Show): string {
 		? `    <itunes:owner>\n      <itunes:name>${esc(show.author)}</itunes:name>\n      <itunes:email>${esc(show.ownerEmail)}</itunes:email>\n    </itunes:owner>\n`
 		: '';
 
+	// Podcasting 2.0: 番組の恒久 GUID / メディア種別 / 無断取り込みロック / 出演者。
+	const guid = uuidv5(`humming-studio.com/feed/${show.slug}.xml`);
+	const locked = show.ownerEmail
+		? `    <podcast:locked owner="${esc(show.ownerEmail)}">yes</podcast:locked>\n`
+		: `    <podcast:locked>no</podcast:locked>\n`;
+	const person = show.author
+		? `    <podcast:person role="host" group="cast">${esc(show.author)}</podcast:person>\n`
+		: '';
+
 	return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"
      xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
      xmlns:psc="http://podlove.org/simple-chapters"
+     xmlns:podcast="https://podcastindex.org/namespace/1.0"
      xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${esc(show.title)}</title>
@@ -79,7 +106,9 @@ export function buildFeed(show: Show): string {
     <itunes:explicit>${show.explicit ? 'true' : 'false'}</itunes:explicit>
     <itunes:category text="${esc(show.category)}"/>
     <itunes:type>episodic</itunes:type>
-${owner}${artwork}    <atom:link href="${SITE}/feed/${show.slug}.xml" rel="self" type="application/rss+xml"/>
+    <podcast:guid>${guid}</podcast:guid>
+    <podcast:medium>podcast</podcast:medium>
+${locked}${person}${owner}${artwork}    <atom:link href="${SITE}/feed/${show.slug}.xml" rel="self" type="application/rss+xml"/>
     <generator>Humming Studio</generator>
 ${items}
   </channel>
