@@ -1,0 +1,23 @@
+# code-review-graph — PR をリスク採点する自動レビュー
+# 変更コードをCIランナー上でグラフ解析し、リスクの高い関数・影響する実行フロー・
+# テスト不足を「1つの固定コメント」にまとめて PR に投稿(push のたび同じコメントを更新)。
+# ソースは外部送信されず、CIランナー内で完結。APIキー不要(GITHUB_TOKEN のみ)。
+name: code-review-graph
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: tirth8205/code-review-graph@v2.3.7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # マージゲートにしたい場合は下を有効化(例: high 以上でCI失敗)
+          # fail-on-risk: high
