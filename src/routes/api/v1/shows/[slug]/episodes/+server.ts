@@ -24,6 +24,14 @@ export async function POST({ request, params }) {
 	if (bytes <= 0 || bytes > LIMITS.bytesPerEpisode)
 		throw error(400, `bytes must be 1..${LIMITS.bytesPerEpisode}`);
 
+	// 文字起こし(任意)。公開URLのみ受け付ける(https のみ)。
+	const transcriptURL =
+		typeof body.transcriptURL === 'string' && body.transcriptURL.startsWith('https://')
+			? body.transcriptURL
+			: undefined;
+	const transcriptType =
+		transcriptURL && typeof body.transcriptType === 'string' ? body.transcriptType : undefined;
+
 	// ストレージはメンバーが公開しても番組オーナーに計上する(上限管理を一元化)。
 	// 上限チェックと計上は行ロック内で原子的に行う(同時公開でも超過しない)
 	try {
@@ -54,6 +62,8 @@ export async function POST({ request, params }) {
 					})
 					.map((c) => ({ start: c.start, title: c.title }))
 			: [],
+		...(transcriptURL ? { transcriptURL } : {}),
+		...(transcriptType ? { transcriptType } : {}),
 		status: 'published'
 	};
 
