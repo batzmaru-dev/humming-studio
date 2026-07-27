@@ -22,6 +22,10 @@ export interface Episode {
 	mimeType: string;
 	pubDate: string; // ISO8601
 	chapters: Chapter[];
+	/** 文字起こしファイルの公開URL(WebVTT等)。Podcasting 2.0 の podcast:transcript に載せる */
+	transcriptURL?: string;
+	/** 文字起こしの MIME(未指定なら text/vtt) */
+	transcriptType?: string;
 	status: 'published' | 'takedown';
 	/** RSS インポート由来(音源は外部ホスティングを参照。ストレージ計上・Blob削除の対象外) */
 	external?: boolean;

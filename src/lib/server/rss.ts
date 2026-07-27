@@ -54,6 +54,13 @@ function chapterXML(episode: Episode): string {
 	return `    <psc:chapters version="1.2">\n${entries}\n    </psc:chapters>\n`;
 }
 
+// Podcasting 2.0: 文字起こし(WebVTT等)。全文が検索対象になり、アクセシビリティも上がる。
+function transcriptXML(show: Show, episode: Episode): string {
+	if (!episode.transcriptURL) return '';
+	const type = episode.transcriptType || 'text/vtt';
+	return `    <podcast:transcript url="${esc(episode.transcriptURL)}" type="${esc(type)}" language="${esc(show.language)}" rel="captions"/>\n`;
+}
+
 function itemXML(show: Show, episode: Episode): string {
 	return `  <item>
     <title>${esc(episode.title)}</title>
@@ -62,7 +69,7 @@ function itemXML(show: Show, episode: Episode): string {
     <enclosure url="${esc(episode.audioURL)}" length="${episode.bytes}" type="${esc(episode.mimeType)}"/>
     <itunes:duration>${hms(episode.durationSec)}</itunes:duration>
     <description>${cdata(episode.notes)}</description>
-${chapterXML(episode)}  </item>`;
+${transcriptXML(show, episode)}${chapterXML(episode)}  </item>`;
 }
 
 export function buildFeed(show: Show): string {
