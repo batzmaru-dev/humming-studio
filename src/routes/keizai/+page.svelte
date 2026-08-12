@@ -5,7 +5,7 @@
 	// ラジオ経済(Radio KEIZAI)× Humming Studio 専用ランディング。
 	// クリーム×朱の現代エディトリアル(Archivo / Zen Kaku Gothic New / DM Mono、
 	// 角なし・2px 罫線・マーキー)で、ラジオ経済の硬派な佇まいをそのまま持ち込む。
-	const TF = 'https://testflight.apple.com/join/s8DBaCfG';
+	const STORE = 'https://apps.apple.com/jp/app/humming-studio/id6790151668';
 	const KEIZAI = 'https://radio-keizai.com';
 
 	const marquee = [
@@ -13,7 +13,7 @@
 		'RADIO KEIZAI × HUMMING STUDIO',
 		'収録・文字起こし・編集・配信',
 		'iPhone · iPad · Mac',
-		'TESTFLIGHT BETA'
+		'NOW ON THE APP STORE'
 	];
 
 	const feats = [
@@ -47,7 +47,7 @@
 		</div>
 	</div>
 
-	<a class="fm-btn fm-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す</a>
+	<a class="fm-btn fm-sticky-cta" href={STORE} use:stickyCTA aria-label="無料で試す">無料で試す</a>
 
 	<header class="fm-hero" data-hero>
 		<div class="fm-wrap">
@@ -57,12 +57,12 @@
 					<span class="fm-x">×</span>
 					<span class="fm-media">RADIO&nbsp;KEIZAI</span>
 				</div>
-				<a class="fm-btn fm-nav-cta" href={TF}>無料で試す</a>
+				<a class="fm-btn fm-nav-cta" href={STORE}>無料で試す</a>
 			</nav>
 
 			<div class="fm-hero-grid">
 				<div class="fm-hero-copy">
-					<div class="fm-kicker"><span class="fm-dot"></span>NOW — TESTFLIGHT BETA</div>
+					<div class="fm-kicker"><span class="fm-dot"></span>NOW ON THE APP STORE</div>
 					<div class="fm-over">EDIT WITH YOUR WORDS</div>
 					<h1>{bd('話した言葉で、')}<br />{bd('編集する。')}</h1>
 					<p class="fm-lead">
@@ -71,7 +71,7 @@
 						)}
 					</p>
 					<div class="fm-cta">
-						<a class="fm-btn" href={TF}>無料で試す</a>
+						<a class="fm-btn" href={STORE}>無料で試す</a>
 						<a class="fm-btn fm-btn-ghost" href="#screen">実機を見る</a>
 					</div>
 					<div class="fm-meta">RECORD → TRANSCRIBE → EDIT → PUBLISH</div>
@@ -125,11 +125,11 @@
 
 	<section class="fm-section fm-cta">
 		<div class="fm-wrap">
-			<div class="fm-kicker fm-kicker-c"><span class="fm-dot"></span>BETA IS OPEN</div>
+			<div class="fm-kicker fm-kicker-c"><span class="fm-dot"></span>AVAILABLE NOW</div>
 			<h2>{bd('話せる人なら、誰でも。')}</h2>
-			<p>{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}</p>
+			<p>{bd('収録から文字起こし・編集・配信まで、これ一台で。App Store で正式公開中です。')}</p>
 			<div class="fm-cta fm-cta-center">
-				<a class="fm-btn fm-btn-lg" href={TF}>無料で試す</a>
+				<a class="fm-btn fm-btn-lg" href={STORE}>無料で試す</a>
 			</div>
 			<a class="fm-back" href={KEIZAI}>← ラジオ経済にもどる</a>
 		</div>

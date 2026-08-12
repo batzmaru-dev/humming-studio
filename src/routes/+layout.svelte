@@ -36,8 +36,10 @@
 				<a href="/takedown" class="hidden text-surface-300 hover:text-surface-50 sm:inline"
 					>削除対応</a
 				>
-				<a href="/#testflight" class="btn preset-filled-primary-500 btn-sm shrink-0 whitespace-nowrap"
-					>テスターに応募</a
+				<a
+					href="https://apps.apple.com/jp/app/humming-studio/id6790151668"
+					class="btn preset-filled-primary-500 btn-sm shrink-0 whitespace-nowrap"
+					>App Store で入手</a
 				>
 			</div>
 		</nav>

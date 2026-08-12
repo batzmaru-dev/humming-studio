@@ -137,11 +137,12 @@
 </section>
 
 <section class="mx-auto max-w-3xl px-6 py-16 text-center">
-	<h2 class="text-2xl font-bold">ベータで試せます</h2>
-	<p class="mt-3 text-surface-300">iPad・iPhone・Mac のテスターを募集中(無料)。</p>
+	<h2 class="text-2xl font-bold">App Store で公開中</h2>
+	<p class="mt-3 text-surface-300">iPad・iPhone・Mac に対応。無料ではじめられます。</p>
 	<div class="mt-6 flex flex-wrap justify-center gap-3">
-		<a href="https://testflight.apple.com/join/s8DBaCfG" class="btn preset-filled-primary-500 btn-lg"
-			>TestFlight で参加する</a
+		<a
+			href="https://apps.apple.com/jp/app/humming-studio/id6790151668"
+			class="btn preset-filled-primary-500 btn-lg">App Store で入手</a
 		>
 		<a href="/" class="btn preset-tonal btn-lg">トップに戻る</a>
 	</div>

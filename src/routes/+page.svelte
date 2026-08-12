@@ -91,7 +91,7 @@
 		}
 	];
 
-	const TF = 'https://testflight.apple.com/join/s8DBaCfG';
+	const STORE = 'https://apps.apple.com/jp/app/humming-studio/id6790151668';
 	const MAC = '/HummingStudio.dmg';
 </script>
 
@@ -104,7 +104,7 @@
 </svelte:head>
 
 <div class="hs">
-	<a class="hs-btn hs-btn-honey hs-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す</a>
+	<a class="hs-btn hs-btn-honey hs-sticky-cta" href={STORE} use:stickyCTA aria-label="無料で試す">無料で試す</a>
 
 	<header class="hs-hero" id="top" data-hero>
 		<div class="hs-wrap">
@@ -117,7 +117,7 @@
 					<a href="#essence">考え方</a>
 					<a href="#screens">実際の画面</a>
 					<a href="#features">機能</a>
-					<a class="hs-btn hs-btn-honey hs-nav-cta" href={TF}>無料で試す</a>
+					<a class="hs-btn hs-btn-honey hs-nav-cta" href={STORE}>無料で試す</a>
 				</div>
 			</nav>
 
@@ -133,7 +133,7 @@
 						)}
 					</p>
 					<div class="hs-hero-cta hs-rise" style="animation-delay:.32s">
-						<a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a>
+						<a class="hs-btn hs-btn-honey" href={STORE}>無料で試す</a>
 						<a class="hs-btn hs-btn-ghost" href="#screens">実際の画面を見る</a>
 					</div>
 					<div class="hs-hero-meta hs-rise" style="animation-delay:.42s">
@@ -391,18 +391,18 @@
 		</div>
 	</section>
 
-	<section class="hs-section hs-cta" id="testflight">
+	<section class="hs-section hs-cta" id="download">
 		<div class="hs-wrap">
 			<h2>{bd('話せる人なら、誰でも。')}</h2>
 			<p>
-				{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}
+				{bd('収録から文字起こし・編集・配信まで、これ一台で。App Store で正式公開中です。')}
 			</p>
 			<div class="hs-hero-cta">
-				<a class="hs-btn hs-btn-honey" href={TF}>無料で試す</a>
+				<a class="hs-btn hs-btn-honey" href={STORE}>App Store で入手</a>
 				<a class="hs-btn hs-btn-ghost" href={MAC} download>Mac 版をダウンロード</a>
 			</div>
 			<p class="hs-cta-fine">
-				iPhone・iPad は TestFlight ／ Mac は直接ダウンロード(.dmg・macOS 14 以降)・ RSS
+				iPhone・iPad は App Store ／ Mac は直接ダウンロード(.dmg・macOS 14 以降)・ RSS
 				配信・既存番組の移行にも対応 ・ 合同会社ツナギビト
 			</p>
 		</div>

@@ -5,7 +5,7 @@
 	// CANDY WAVE × Humming Studio 専用ランディング。
 	// CANDY WAVE の世界観(ゆめかわ・マスコット「もくもくちゃん」・カーテン遷移)を
 	// そのまま持ち込み、アプリも CANDY テーマの実機画面で見せる。
-	const TF = 'https://testflight.apple.com/join/s8DBaCfG';
+	const STORE = 'https://apps.apple.com/jp/app/humming-studio/id6790151668';
 	const CANDY = 'https://candy-wave.vercel.app';
 
 	const feats = [
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 
-	<a class="cw-btn cw-sticky-cta" href={TF} use:stickyCTA aria-label="無料で試す">無料で試す ♡</a>
+	<a class="cw-btn cw-sticky-cta" href={STORE} use:stickyCTA aria-label="無料で試す">無料で試す ♡</a>
 
 	<header class="cw-hero" data-hero>
 		<span class="cw-deco cw-deco-1" use:parallax={{ speed: 0.16, max: 90 }} aria-hidden="true">♡</span>
@@ -85,7 +85,7 @@
 					<span class="cw-x">×</span>
 					<span class="cw-brand-media">CANDY&nbsp;WAVE</span>
 				</div>
-				<a class="cw-btn cw-nav-cta" href={TF}>無料で試す ♡</a>
+				<a class="cw-btn cw-nav-cta" href={STORE}>無料で試す ♡</a>
 			</nav>
 
 			<div class="cw-hero-grid">
@@ -98,7 +98,7 @@
 						)}
 					</p>
 					<div class="cw-cta">
-						<a class="cw-btn" href={TF}>無料で試す →</a>
+						<a class="cw-btn" href={STORE}>無料で試す →</a>
 						<a class="cw-btn cw-btn-ghost" href="#screen">アプリを見る</a>
 					</div>
 					<div class="cw-meta">収録 → 文字起こし → 編集 → 配信</div>
@@ -153,9 +153,9 @@
 			<div class="cw-final-card" use:reveal>
 				{@render mascot(120, 'cw-float')}
 				<h2>{bd('あなたも、パーソナリティに ♡')}</h2>
-				<p>{bd('収録から文字起こし・編集・配信まで、これ一台で。いま TestFlight でベータを配信しています。')}</p>
+				<p>{bd('収録から文字起こし・編集・配信まで、これ一台で。App Store で正式公開中です。')}</p>
 				<div class="cw-cta">
-					<a class="cw-btn cw-btn-lg" href={TF}>無料で試す →</a>
+					<a class="cw-btn cw-btn-lg" href={STORE}>無料で試す →</a>
 				</div>
 				<a class="cw-back" href={CANDY}>← CANDY WAVE にもどる</a>
 			</div>
