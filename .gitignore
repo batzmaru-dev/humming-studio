@@ -7,3 +7,7 @@ build
 
 # admin token for live 生放送 admin API (local only)
 .admin-token.local
+
+# Mac版DMG(2GB規模・GitHub単一ファイル100MB上限超)。Vercel Blobで配信
+# (scripts/upload-mac-dmg.mjs 参照 - podblockリポジトリのアーカイブ後に実行)
+static/HummingStudio.dmg

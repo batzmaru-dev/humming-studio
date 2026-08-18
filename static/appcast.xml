@@ -6,16 +6,16 @@
     <description>Humming Studio (Mac版) アップデート情報</description>
     <language>ja</language>
     <item>
-      <title>1.1.1 (114)</title>
-      <pubDate>Tue, 18 Aug 2026 23:19:33 +0900</pubDate>
+      <title>1.1.1 (115)</title>
+      <pubDate>Wed, 19 Aug 2026 02:25:18 +0900</pubDate>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
       <enclosure
-        url="https://humming-studio.com/HummingStudio.dmg"
-        sparkle:version="114"
+        url="https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio.dmg"
+        sparkle:version="115"
         sparkle:shortVersionString="1.1.1"
-        length="12723746"
+        length="1969615035"
         type="application/octet-stream"
-        sparkle:edSignature="oVzpCz+hxJqfgr87ptE/qwBOMssglvyRwSIPEDiwUau/U2iN9C5YoZ0+vZElqfW8piRjZwvnSQyG1Bc04RuhCA==" />
+        sparkle:edSignature="NP/4KZ457/mPvZELZzADBElkVUHHxM/krDpkQp+zGfEOy7uXm/M4DXh7hTYx3ek/jG5fQPsC6x/hKd6NdVwCBA==" />
     </item>
   </channel>
 </rss>
