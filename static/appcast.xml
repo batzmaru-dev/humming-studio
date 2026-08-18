@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Humming Studio</title>
+    <link>https://humming-studio.com/appcast.xml</link>
+    <description>Humming Studio (Mac版) アップデート情報</description>
+    <language>ja</language>
+    <item>
+      <title>1.1.1 (114)</title>
+      <pubDate>Tue, 18 Aug 2026 23:19:33 +0900</pubDate>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://humming-studio.com/HummingStudio.dmg"
+        sparkle:version="114"
+        sparkle:shortVersionString="1.1.1"
+        length="12723746"
+        type="application/octet-stream"
+        sparkle:edSignature="oVzpCz+hxJqfgr87ptE/qwBOMssglvyRwSIPEDiwUau/U2iN9C5YoZ0+vZElqfW8piRjZwvnSQyG1Bc04RuhCA==" />
+    </item>
+  </channel>
+</rss>
