@@ -26,7 +26,8 @@
 				['ブロックを消すだけのカット編集', 'いらないブロックを選んで Delete。テキストを読める人なら誰でも仕上げられます。'],
 				['連結 FAB & ジョグホイール', '再生 / 停止・再生位置での分割・マーカー追加をまとめた FAB を配置。ジョグでクラップやマーカーにスナップしながら微調整。'],
 				['トピック自動グループ', '話題ごとにブロックを自動グループ化。切り替わりには色の違うマーカーが自動で入ります。'],
-				['ブロック単位のマイク音量', 'マルチトラック収録なら、ブロックごとに特定マイクの音量調整や部分ミュートができます。']
+				['ブロック単位のマイク音量', 'マルチトラック収録なら、ブロックごとに特定マイクの音量調整や部分ミュートができます。'],
+				['AIエージェントから編集(MCP・Mac版)', 'Claude Code などのMCP対応AIエージェントから、編集モード中のブロック削除・復元・分割・マーカー操作を直接指示できます。詳しくは<a href="/mcp" class="text-primary-300 underline">使い方</a>へ。']
 			]
 		},
 		{
@@ -92,7 +93,7 @@
 					{#each g.items as [title, desc]}
 						<div class="card preset-outlined-surface-700 bg-surface-900 p-5">
 							<h3 class="h6 font-semibold text-primary-300">{title}</h3>
-							<p class="mt-1.5 text-sm text-surface-300">{desc}</p>
+							<p class="mt-1.5 text-sm text-surface-300">{@html desc}</p>
 						</div>
 					{/each}
 				</div>

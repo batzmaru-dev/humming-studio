@@ -29,6 +29,7 @@
 			</a>
 			<div class="ml-auto flex items-center gap-4 text-sm sm:gap-5">
 				<a href="/features" class="hidden text-surface-300 hover:text-surface-50 sm:inline">機能</a>
+				<a href="/news" class="hidden text-surface-300 hover:text-surface-50 sm:inline">お知らせ</a>
 				<a href="/terms" class="hidden text-surface-300 hover:text-surface-50 sm:inline">利用規約</a>
 				<a href="/privacy" class="hidden text-surface-300 hover:text-surface-50 sm:inline"
 					>プライバシー</a
@@ -59,6 +60,7 @@
 				>運営: <a href="https://tsunagu-hito.com" class="anchor">合同会社ツナギビト</a></span
 			>
 			<a href="/features" class="hover:text-surface-200">機能</a>
+			<a href="/news" class="hover:text-surface-200">お知らせ</a>
 			<a href="/terms" class="hover:text-surface-200">利用規約</a>
 			<a href="/privacy" class="hover:text-surface-200">プライバシーポリシー</a>
 			<a href="/takedown" class="hover:text-surface-200">削除対応(権利者の方へ)</a>

@@ -48,6 +48,12 @@
 		{
 			title: 'ワンストップ配信',
 			desc: '公開すると RSS を発行。Spotify や Apple Podcasts に登録でき、既存番組の移行やチーム共同運用にも対応。'
+		},
+		{
+			title: 'AIエージェントから編集操作(Mac版)',
+			desc: 'MCP(Model Context Protocol)対応。Claude Code などのAIエージェントに話しかけるだけで、編集モード中のブロック削除・分割・マーカー追加を直接操作できます。',
+			badge: 'Mac版・NEW',
+			href: '/mcp'
 		}
 	];
 
@@ -278,10 +284,11 @@
 			</div>
 			<div class="hs-feat-grid" use:stagger>
 				{#each features as f}
-					<div class="hs-feat">
+					<svelte:element this={f.href ? 'a' : 'div'} href={f.href} class="hs-feat">
+						{#if f.badge}<span class="hs-feat-badge">{f.badge}</span>{/if}
 						<h3>{bd(f.title)}</h3>
 						<p>{bd(f.desc)}</p>
-					</div>
+					</svelte:element>
 				{/each}
 			</div>
 		</div>
@@ -992,6 +999,26 @@
 	.hs-feat {
 		background: var(--pine);
 		padding: 32px 28px 34px;
+		display: block;
+		text-decoration: none;
+		transition: background 0.2s ease;
+	}
+	.hs-feat:has(.hs-feat-badge) {
+		grid-column: 1 / -1;
+	}
+	a.hs-feat:hover {
+		background: color-mix(in srgb, var(--pine) 80%, var(--paper) 8%);
+	}
+	.hs-feat-badge {
+		display: inline-block;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		color: var(--pine);
+		background: var(--paper);
+		border-radius: 999px;
+		padding: 3px 10px;
+		margin-bottom: 12px;
 	}
 	.hs-feat h3 {
 		font-family: var(--f-display);
