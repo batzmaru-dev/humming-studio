@@ -5,6 +5,15 @@
 	// トップページ = Humming Studio ランディング(ライト/森のエディトリアル)。
 	// 共通レイアウトのダークなヘッダー/フッターはトップでは非表示(+layout.svelte)。
 
+	let { data } = $props();
+
+	function formatNewsDate(iso: string) {
+		if (!iso) return '';
+		const d = new Date(iso);
+		if (Number.isNaN(d.getTime())) return '';
+		return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+	}
+
 	// 実機スクリーンショット(iPhone)
 	const shots = [
 		{
@@ -416,6 +425,25 @@
 			</p>
 		</div>
 	</section>
+
+	{#if data.news.length > 0}
+	<section class="hs-section hs-news">
+		<div class="hs-wrap">
+			<div class="hs-sec-head" use:reveal>
+				<h2>{bd('最新情報')}</h2>
+			</div>
+			<div class="hs-news-list" use:stagger>
+				{#each data.news as item (item.id)}
+					<a href="/news/{item.slug}" class="hs-news-item">
+						<span class="hs-news-date">{formatNewsDate(item.date)}</span>
+						<span class="hs-news-title">{item.title}</span>
+					</a>
+				{/each}
+			</div>
+			<a href="/news" class="hs-news-more">お知らせ一覧を見る →</a>
+		</div>
+	</section>
+	{/if}
 
 	<footer class="hs-footer">
 		<div class="hs-wrap">
@@ -1277,6 +1305,50 @@
 		font-size: clamp(18px, 2.2vw, 24px);
 		color: var(--moss);
 		margin-top: 18px;
+	}
+
+	/* NEWS */
+	.hs-news {
+		background: var(--paper2);
+	}
+	.hs-news-list {
+		margin-top: clamp(26px, 3.4vw, 40px);
+		border-top: 1px solid rgba(20, 30, 22, 0.12);
+	}
+	.hs-news-item {
+		display: flex;
+		align-items: baseline;
+		gap: 20px;
+		padding: 18px 4px;
+		border-bottom: 1px solid rgba(20, 30, 22, 0.12);
+		text-decoration: none;
+		color: inherit;
+		transition: opacity 0.2s ease;
+	}
+	.hs-news-item:hover {
+		opacity: 0.62;
+	}
+	.hs-news-date {
+		flex-shrink: 0;
+		font-size: 13px;
+		color: var(--ink-soft);
+		font-variant-numeric: tabular-nums;
+	}
+	.hs-news-title {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.hs-news-more {
+		display: inline-block;
+		margin-top: 22px;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--moss);
+		text-decoration: none;
+	}
+	.hs-news-more:hover {
+		text-decoration: underline;
 	}
 
 	/* CTA */
