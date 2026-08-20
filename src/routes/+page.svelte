@@ -173,6 +173,25 @@
 		</div>
 	</header>
 
+	{#if data.news.length > 0}
+	<section class="hs-section hs-news hs-news-top">
+		<div class="hs-wrap">
+			<div class="hs-sec-head" use:reveal>
+				<h2>{bd('最新情報')}</h2>
+			</div>
+			<div class="hs-news-list" use:stagger>
+				{#each data.news as item (item.id)}
+					<a href="/news/{item.slug}" class="hs-news-item">
+						<span class="hs-news-date">{formatNewsDate(item.date)}</span>
+						<span class="hs-news-title">{item.title}</span>
+					</a>
+				{/each}
+			</div>
+			<a href="/news" class="hs-news-more">お知らせ一覧を見る →</a>
+		</div>
+	</section>
+	{/if}
+
 	<section class="hs-section hs-essence" id="essence">
 		<div class="hs-wrap">
 			<div class="hs-sec-head" use:reveal>
@@ -425,25 +444,6 @@
 			</p>
 		</div>
 	</section>
-
-	{#if data.news.length > 0}
-	<section class="hs-section hs-news">
-		<div class="hs-wrap">
-			<div class="hs-sec-head" use:reveal>
-				<h2>{bd('最新情報')}</h2>
-			</div>
-			<div class="hs-news-list" use:stagger>
-				{#each data.news as item (item.id)}
-					<a href="/news/{item.slug}" class="hs-news-item">
-						<span class="hs-news-date">{formatNewsDate(item.date)}</span>
-						<span class="hs-news-title">{item.title}</span>
-					</a>
-				{/each}
-			</div>
-			<a href="/news" class="hs-news-more">お知らせ一覧を見る →</a>
-		</div>
-	</section>
-	{/if}
 
 	<footer class="hs-footer">
 		<div class="hs-wrap">
@@ -1310,6 +1310,10 @@
 	/* NEWS */
 	.hs-news {
 		background: var(--paper2);
+	}
+	.hs-news-top {
+		padding-top: clamp(32px, 4vw, 52px);
+		padding-bottom: clamp(32px, 4vw, 52px);
 	}
 	.hs-news-list {
 		margin-top: clamp(26px, 3.4vw, 40px);
