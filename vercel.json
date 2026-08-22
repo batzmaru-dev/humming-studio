@@ -2,7 +2,7 @@
 	"crons": [
 		{
 			"path": "/api/v1/cron/live-sweep",
-			"schedule": "*/5 * * * *"
+			"schedule": "5,35 * * * *"
 		}
 	]
 }
