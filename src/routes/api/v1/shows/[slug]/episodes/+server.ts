@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { getShow, mutateShow, mutateUser, canPublish, LIMITS, type Episode } from '$lib/server/store';
+import { tsunaguHosting } from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -78,6 +79,26 @@ export async function POST({ request, params }) {
 			return user;
 		});
 		throw error(404, 'show not found');
+	}
+
+	// つなぐホスティングに紐付いている番組なら、そのままエピソードを自動同期する。
+	// Humming Studio自身の公開は上のmutateShowで既に完了しているので、ここが失敗しても
+	// レスポンスは失敗にしない(ベストエフォート。運営が後で手動投稿できる)。
+	if (show.tsunaguPodcastId) {
+		try {
+			await tsunaguHosting.createAndPublishEpisode({
+				podcastId: show.tsunaguPodcastId,
+				episodeId: episode.id,
+				title: episode.title,
+				description: episode.notes,
+				audioURL: episode.audioURL
+			});
+		} catch (e) {
+			console.error(
+				`[tsunagu-hosting] episode sync failed for show=${params.slug} episode=${episode.id}:`,
+				e instanceof Error ? e.message : e
+			);
+		}
 	}
 
 	return json({ episode }, { status: 201 });
