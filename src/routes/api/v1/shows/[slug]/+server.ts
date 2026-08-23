@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { getShow, mutateShow, canPublish } from '$lib/server/store';
+import { tsunaguListenUrl, tsunaguRssUrl } from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -16,7 +17,14 @@ export async function GET({ request, params }) {
 			...show,
 			members: isOwner ? (show.members ?? []) : undefined,
 			role: isOwner ? 'owner' : 'member',
-			feedURL: `https://humming-studio.com/feed/${show.slug}.xml`
+			feedURL: `https://humming-studio.com/feed/${show.slug}.xml`,
+			// つなぐホスティングに紐付いている番組のみ、視聴ページ/RSSリンクを返す
+			...(show.tsunaguPodcastHandle
+				? {
+						tsunaguListenURL: tsunaguListenUrl(show.tsunaguPodcastHandle),
+						tsunaguRssURL: tsunaguRssUrl(show.tsunaguPodcastHandle)
+					}
+				: {})
 		}
 	});
 }
@@ -38,12 +46,17 @@ export async function PATCH({ request, params }) {
 			'category',
 			'language',
 			'artworkURL',
-			'ownerEmail'
+			'ownerEmail',
+			'tsunaguPodcastHandle'
 		] as const) {
 			if (typeof body[key] === 'string') s[key] = body[key];
 		}
 		if (typeof body.explicit === 'boolean') s.explicit = body.explicit;
 		if (typeof body.radioKeizaiOptIn === 'boolean') s.radioKeizaiOptIn = body.radioKeizaiOptIn;
+		// つなぐホスティングとの紐付け(運営が発行した番組IDを番組オーナーが登録する)
+		if (typeof body.tsunaguPodcastId === 'number' && Number.isFinite(body.tsunaguPodcastId)) {
+			s.tsunaguPodcastId = body.tsunaguPodcastId;
+		}
 		return s;
 	});
 	return json({ show });
