@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { getOrCreateUser, getShow, LIMITS } from '$lib/server/store';
+import { tsunaguListenUrl, tsunaguRssUrl } from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -19,7 +20,14 @@ export async function GET({ request }) {
 			radioKeizaiOptIn: s.radioKeizaiOptIn,
 			artworkURL: s.artworkURL ?? null,
 			feedURL: `https://humming-studio.com/feed/${s.slug}.xml`,
-			role: s.ownerSub === sub ? 'owner' : 'member'
+			role: s.ownerSub === sub ? 'owner' : 'member',
+			// つなぐホスティングに紐付いている番組のみ、視聴ページ/RSSリンクを返す
+			...(s.tsunaguPodcastHandle
+				? {
+						tsunaguListenURL: tsunaguListenUrl(s.tsunaguPodcastHandle),
+						tsunaguRssURL: tsunaguRssUrl(s.tsunaguPodcastHandle)
+					}
+				: {})
 		}))
 	});
 }
