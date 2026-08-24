@@ -29,6 +29,8 @@ export interface Episode {
 	status: 'published' | 'takedown';
 	/** RSS インポート由来(音源は外部ホスティングを参照。ストレージ計上・Blob削除の対象外) */
 	external?: boolean;
+	/** つなぐホスティング(Castopod)側に同期済みの場合のエピソードID。編集時の更新先特定に使う */
+	tsunaguEpisodeId?: number;
 }
 
 export interface Show {

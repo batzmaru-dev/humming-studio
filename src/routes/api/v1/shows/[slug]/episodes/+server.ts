@@ -86,12 +86,18 @@ export async function POST({ request, params }) {
 	// レスポンスは失敗にしない(ベストエフォート。運営が後で手動投稿できる)。
 	if (show.tsunaguPodcastId) {
 		try {
-			await tsunaguHosting.createAndPublishEpisode({
+			const synced = await tsunaguHosting.createAndPublishEpisode({
 				podcastId: show.tsunaguPodcastId,
 				episodeId: episode.id,
 				title: episode.title,
 				description: episode.notes,
 				audioURL: episode.audioURL
+			});
+			// 同期先のCastopod episode IDを控えておく(後で編集する際の更新先特定に使う)
+			await mutateShow(params.slug, (s) => {
+				const ep = s.episodes.find((e) => e.id === episode.id);
+				if (ep) ep.tsunaguEpisodeId = synced.id;
+				return s;
 			});
 		} catch (e) {
 			console.error(
