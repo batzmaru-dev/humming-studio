@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { requireAuth } from '$lib/server/session';
-import { verifyProSubscription } from '$lib/server/appstore';
+import { verifyProOrGrant } from '$lib/server/pro';
 
 export const prerender = false;
 export const config = { maxDuration: 60 };
@@ -32,7 +32,7 @@ export async function POST({ request }) {
 	// AI_FREE_SUBS はサブスク審査前の動作確認用バイパス
 	const freeSubs = (env.AI_FREE_SUBS ?? '').split(',').filter(Boolean);
 	if (!freeSubs.includes(sub)) {
-		const reason = await verifyProSubscription(body.transactionJWS);
+		const reason = await verifyProOrGrant(sub, body.transactionJWS);
 		if (reason) throw error(403, `Pro サブスクリプションが必要です(${reason})`);
 	}
 

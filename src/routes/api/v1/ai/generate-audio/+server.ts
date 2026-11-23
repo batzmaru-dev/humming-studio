@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import { put } from '@vercel/blob';
 import { env } from '$env/dynamic/private';
 import { requireAuth } from '$lib/server/session';
-import { verifyProSubscription } from '$lib/server/appstore';
+import { verifyProOrGrant } from '$lib/server/pro';
 import {
 	getAudioGenUsage,
 	addAudioGenUsage,
@@ -58,7 +58,7 @@ export async function POST({ request }) {
 	const freeSubs = (env.AI_FREE_SUBS ?? '').split(',').filter(Boolean);
 	let usingFreeTrial = false;
 	if (!freeSubs.includes(sub)) {
-		const reason = await verifyProSubscription(body.transactionJWS ?? '');
+		const reason = await verifyProOrGrant(sub, body.transactionJWS ?? '');
 		if (reason) {
 			const user = await getOrCreateUser(sub);
 			if (user.freeAudioGenUsed) {
