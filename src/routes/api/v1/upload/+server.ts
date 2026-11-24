@@ -6,7 +6,7 @@ import { LIMITS } from '$lib/server/store';
 export const prerender = false;
 
 /**
- * 音声ファイルのクライアントアップロード(Vercel Blob client upload protocol)。
+ * 音声・アートワーク・文字起こしのクライアントアップロード(Vercel Blob client upload protocol)。
  * ネイティブアプリ側の手順:
  *   1. POST ここへ {"type":"blob.generate-client-token","payload":{"pathname":"audio/<uuid>.m4a","callbackUrl":"https://humming-studio.com/api/v1/upload","clientPayload":null,"multipart":false}}
  *      (Authorization: Bearer <セッショントークン> 必須)
@@ -36,7 +36,18 @@ export async function POST({ request }) {
 						addRandomSuffix: true
 					};
 				}
-				if (!pathname.startsWith('audio/')) throw new Error('pathname must start with audio/ or artwork/');
+				// 文字起こし(WebVTT)。RSS の podcast:transcript から参照される。
+				// アプリは以前からここへ上げていたが、許可されておらず毎回失敗していた
+				// (アプリ側が失敗を無視するため公開自体は通り、文字起こしだけが配信に載らなかった)。
+				if (pathname.startsWith('transcript/')) {
+					return {
+						allowedContentTypes: ['text/vtt'],
+						maximumSizeInBytes: 5 * 1024 * 1024,
+						addRandomSuffix: true
+					};
+				}
+				if (!pathname.startsWith('audio/'))
+					throw new Error('pathname must start with audio/, artwork/ or transcript/');
 				return {
 					allowedContentTypes: ['audio/mp4', 'audio/x-m4a', 'audio/mpeg', 'audio/wav', 'audio/aac'],
 					maximumSizeInBytes: LIMITS.bytesPerEpisode,
