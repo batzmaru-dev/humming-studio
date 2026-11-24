@@ -3,9 +3,11 @@ import { env } from '$env/dynamic/private';
 // Humming Studio → つなぐホスティング（Castopod / podcast.radio-keizai.com）。
 // 番組ホストは Castopod へのログインを一切意識しない設計（2026-08-24 決定）。
 // Humming Studio 側は RadioSystem と同じ共有 REST API クレデンシャルでサーバー間通信のみ行う。
-// podcast の紐付け（tsunaguPodcastId）は運営が Castopod 管理画面で番組を作成し、
-// Show.tsunaguPodcastId として手動で発行する（Castopod の REST API にはpodcast作成/
-// ユーザー管理の口が無いため、自動プロビジョニングはできない）。
+//
+// 2026-11-25: RSS 配信を Castopod へ一本化する方針に変更(川上決定)。Castopod 側に番組の
+// 作成・更新・削除 API を追加したので(castopod-overrides/PodcastController.php)、番組は
+// 公開の時点で自動作成する。フィードの正本は Castopod になり、Humming Studio の
+// /feed/<slug>.xml は移行済みの番組について Castopod のフィードへ 301 転送する。
 //
 // azuracast.ts / asc.ts と同じ conventions: cfg() が env 不足で null を返す(=機能ごと無効)。
 
@@ -24,7 +26,20 @@ export function tsunaguHostingConfigured(): boolean {
 	return cfg() !== null;
 }
 
-async function th<T>(path: string, init: { method: string; body?: FormData }): Promise<T> {
+/** つなぐホスティングが 2xx 以外を返したとき。status で 409(重複)や 400(検証エラー)を見分ける */
+export class TsunaguHostingError extends Error {
+	constructor(
+		public status: number,
+		body: string
+	) {
+		super(`つなぐホスティング ${status}: ${body.slice(0, 300)}`);
+	}
+}
+
+async function th<T>(
+	path: string,
+	init: { method: string; body?: FormData; timeoutMs?: number }
+): Promise<T> {
 	const c = cfg();
 	if (!c) {
 		throw new Error(
@@ -36,11 +51,11 @@ async function th<T>(path: string, init: { method: string; body?: FormData }): P
 		method: init.method,
 		headers: { Authorization: auth },
 		body: init.body,
-		signal: AbortSignal.timeout(60_000)
+		signal: AbortSignal.timeout(init.timeoutMs ?? 60_000)
 	});
 	if (!res.ok) {
 		const text = await res.text().catch(() => '');
-		throw new Error(`つなぐホスティング ${res.status}: ${text.slice(0, 300)}`);
+		throw new TsunaguHostingError(res.status, text);
 	}
 	return res.json() as Promise<T>;
 }
@@ -65,10 +80,151 @@ export function tsunaguRssUrl(handle: string): string {
 	return `${base}/@${handle}/feed.xml`;
 }
 
+export interface TsunaguPodcast {
+	id: number;
+	handle: string;
+	title: string;
+	feed_url: string;
+	cover_url: string;
+}
+
+const DEFAULT_COVER_URL = 'https://humming-studio.com/default-cover.png';
+const FALLBACK_OWNER_EMAIL = 'info@tsunagu-hito.com';
+
+/**
+ * Humming Studio の slug([a-z0-9-]{3,40})から Castopod の handle([a-zA-Z0-9_]{1,32})を作る。
+ * handle はフィード URL の一部になり、作成後は変えられない。
+ */
+export function tsunaguHandleFromSlug(slug: string): string {
+	return slug.replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 32);
+}
+
+/**
+ * フィードの正本が Castopod に移った番組か。移行済みなら /feed/<slug>.xml は転送し、
+ * API が返す feedURL も Castopod のものにする。
+ * (番組を Castopod に作っただけでは true にしない。既存エピソードを送り終えてから
+ *  tsunaguFeedMigratedAt を立てる。途中で切り替えると購読者から見て話数が減るため)
+ */
+export function tsunaguFeedMigrated(show: {
+	tsunaguPodcastHandle?: string;
+	tsunaguFeedMigratedAt?: string;
+}): boolean {
+	return Boolean(show.tsunaguPodcastHandle && show.tsunaguFeedMigratedAt);
+}
+
+/** 利用者に見せるフィード URL(移行済みなら Castopod、未移行なら Humming Studio) */
+export function publicFeedUrl(show: {
+	slug: string;
+	tsunaguPodcastHandle?: string;
+	tsunaguFeedMigratedAt?: string;
+}): string {
+	return tsunaguFeedMigrated(show)
+		? tsunaguRssUrl(show.tsunaguPodcastHandle!)
+		: `https://humming-studio.com/feed/${show.slug}.xml`;
+}
+
+async function fetchBlob(url: string, timeoutMs = 60_000): Promise<Blob> {
+	const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+	if (!res.ok) throw new Error(`ファイルの取得に失敗しました: ${res.status} ${url}`);
+	return res.blob();
+}
+
+function coverFilename(blob: Blob): string {
+	return blob.type === 'image/png' ? 'cover.png' : 'cover.jpg';
+}
+
+function audioFilename(mimeType: string): string {
+	return mimeType === 'audio/mpeg' || mimeType === 'audio/mp3' ? 'episode.mp3' : 'episode.m4a';
+}
+
+/** Castopod の scheduled_publication_date 用(Y-m-d H:i、UTC) */
+function castopodDate(iso: string): string {
+	return new Date(iso).toISOString().slice(0, 16).replace('T', ' ');
+}
+
 export const tsunaguHosting = {
 	configured: tsunaguHostingConfigured,
 	listenUrl: tsunaguListenUrl,
 	rssUrl: tsunaguRssUrl,
+
+	/**
+	 * 番組を Castopod に作る。handle は slug から作り、既に使われていれば(409)
+	 * 末尾に _2, _3… を付けて取り直す。
+	 * カバーは Castopod の要件(1400px 以上の正方形 jpg/png)を満たさないと 400 になるので、
+	 * 番組のアートワークで弾かれたら既定のカバーで作り直す(番組を作れないよりよい)。
+	 */
+	createPodcast: async (params: {
+		slug: string;
+		title: string;
+		description: string;
+		author: string;
+		ownerEmail?: string;
+		artworkURL?: string;
+	}): Promise<TsunaguPodcast> => {
+		const c = cfg();
+		if (!c) throw new Error('つなぐホスティングが未設定です');
+
+		const base = tsunaguHandleFromSlug(params.slug);
+		const covers: string[] = [];
+		if (params.artworkURL) covers.push(params.artworkURL);
+		covers.push(DEFAULT_COVER_URL);
+
+		let lastError: unknown;
+		for (const coverURL of covers) {
+			let cover: Blob;
+			try {
+				cover = await fetchBlob(coverURL);
+			} catch (e) {
+				lastError = e;
+				continue;
+			}
+			for (let n = 1; n <= 5; n++) {
+				const suffix = n === 1 ? '' : `_${n}`;
+				const handle = base.slice(0, 32 - suffix.length) + suffix;
+				const form = new FormData();
+				form.set('created_by', String(c.userId));
+				form.set('title', params.title.slice(0, 128));
+				form.set('handle', handle);
+				// Castopod は説明が必須
+				form.set('description', params.description.trim() || params.title);
+				form.set('owner_name', params.author || params.title);
+				form.set('owner_email', params.ownerEmail || FALLBACK_OWNER_EMAIL);
+				form.set('publisher', 'Humming Studio');
+				form.set('cover', cover, coverFilename(cover));
+				try {
+					return await th<TsunaguPodcast>('/podcasts', {
+						method: 'POST',
+						body: form,
+						timeoutMs: 120_000
+					});
+				} catch (e) {
+					lastError = e;
+					if (e instanceof TsunaguHostingError && e.status === 409) continue; // handle 重複 → 次の候補
+					break; // 400(カバー不適合など)→ 次のカバーで試す
+				}
+			}
+			if (!(lastError instanceof TsunaguHostingError && lastError.status === 400)) break;
+		}
+		throw lastError instanceof Error ? lastError : new Error('番組を作成できませんでした');
+	},
+
+	/** 番組のタイトル・説明・発信者名を Castopod 側にも反映する(送った項目だけ更新) */
+	updatePodcast: async (params: {
+		podcastId: number;
+		title?: string;
+		description?: string;
+		author?: string;
+	}): Promise<TsunaguPodcast> => {
+		const c = cfg();
+		if (!c) throw new Error('つなぐホスティングが未設定です');
+		const form = new FormData();
+		form.set('updated_by', String(c.userId));
+		if (params.title !== undefined) form.set('title', params.title.slice(0, 128));
+		if (params.description !== undefined && params.description.trim() !== '')
+			form.set('description', params.description);
+		if (params.author !== undefined && params.author !== '') form.set('owner_name', params.author);
+		return th<TsunaguPodcast>(`/podcasts/${params.podcastId}`, { method: 'POST', body: form });
+	},
 
 	/**
 	 * エピソードを作成して即座に公開する(Castopod REST APIは create → publish の2段階)。
@@ -82,29 +238,56 @@ export const tsunaguHosting = {
 		title: string;
 		description: string;
 		audioURL: string;
+		mimeType?: string;
+		transcriptURL?: string;
+		/** 元の公開日時(ISO8601)。過去のエピソードを移すとき、公開日を保つために渡す */
+		pubDate?: string;
 	}): Promise<TsunaguEpisode> => {
 		const c = cfg();
 		if (!c) throw new Error('つなぐホスティングが未設定です');
 
-		const audioRes = await fetch(params.audioURL, { signal: AbortSignal.timeout(60_000) });
-		if (!audioRes.ok) throw new Error(`音声ファイルの取得に失敗しました: ${audioRes.status}`);
-		const audioBlob = await audioRes.blob();
+		const audioBlob = await fetchBlob(params.audioURL, 240_000);
 
 		const createForm = new FormData();
 		createForm.set('title', params.title);
 		createForm.set('slug', params.episodeId);
 		createForm.set('podcast_id', String(params.podcastId));
-		createForm.set('description', params.description);
+		// Castopod は description が無いと 500 になる
+		createForm.set('description', params.description.trim() || params.title);
 		createForm.set('type', 'full');
 		createForm.set('created_by', String(c.userId));
 		createForm.set('updated_by', String(c.userId));
-		createForm.set('audio_file', audioBlob, 'episode.mp3');
+		createForm.set('audio_file', audioBlob, audioFilename(params.mimeType ?? audioBlob.type));
 
-		const created = await th<TsunaguEpisode>('/episodes', { method: 'POST', body: createForm });
+		// 文字起こし(WebVTT)は任意。取れなければ付けずに進める(公開そのものは止めない)
+		if (params.transcriptURL) {
+			try {
+				const transcript = await fetchBlob(params.transcriptURL);
+				createForm.set('transcript-choice', 'upload-file');
+				createForm.set('transcript_file', transcript, 'transcript.vtt');
+			} catch (e) {
+				console.error('[tsunagu-hosting] transcript fetch failed:', e instanceof Error ? e.message : e);
+			}
+		}
+
+		const created = await th<TsunaguEpisode>('/episodes', {
+			method: 'POST',
+			body: createForm,
+			timeoutMs: 280_000
+		});
 
 		const publishForm = new FormData();
-		publishForm.set('publication_method', 'now');
 		publishForm.set('created_by', String(c.userId));
+		// 10分以上前の公開日時は、その日時で公開する(過去日時の schedule は即時公開扱いになる)
+		const backdated =
+			params.pubDate && Date.now() - new Date(params.pubDate).getTime() > 10 * 60_000;
+		if (backdated) {
+			publishForm.set('publication_method', 'schedule');
+			publishForm.set('scheduled_publication_date', castopodDate(params.pubDate!));
+			publishForm.set('client_timezone', 'UTC');
+		} else {
+			publishForm.set('publication_method', 'now');
+		}
 		return th<TsunaguEpisode>(`/episodes/${created.id}/publish`, { method: 'POST', body: publishForm });
 	},
 

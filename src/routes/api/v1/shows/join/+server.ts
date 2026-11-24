@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { consumeInvite, mutateShow, mutateUser } from '$lib/server/store';
+import { publicFeedUrl } from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -34,7 +35,7 @@ export async function POST({ request }) {
 			title: show.title,
 			episodeCount: show.episodes.filter((e) => e.status === 'published').length,
 			radioKeizaiOptIn: show.radioKeizaiOptIn,
-			feedURL: `https://humming-studio.com/feed/${show.slug}.xml`,
+			feedURL: publicFeedUrl(show),
 			role: 'member'
 		}
 	});

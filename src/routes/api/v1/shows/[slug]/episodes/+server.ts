@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { getShow, mutateShow, mutateUser, canPublish, LIMITS, type Episode } from '$lib/server/store';
 import { tsunaguHosting } from '$lib/server/tsunagu-hosting';
+import { ensureTsunaguPodcast, syncEpisode } from '$lib/server/tsunaguSync';
 
 export const prerender = false;
 
@@ -81,24 +82,14 @@ export async function POST({ request, params }) {
 		throw error(404, 'show not found');
 	}
 
-	// つなぐホスティングに紐付いている番組なら、そのままエピソードを自動同期する。
-	// Humming Studio自身の公開は上のmutateShowで既に完了しているので、ここが失敗しても
-	// レスポンスは失敗にしない(ベストエフォート。運営が後で手動投稿できる)。
-	if (show.tsunaguPodcastId) {
+	// 公開先は つなぐホスティング(Castopod)に一本化している。番組がまだ無ければここで作り、
+	// エピソードを送る。Humming Studio 側の保存は上の mutateShow で済んでいるので、
+	// ここが失敗してもレスポンスは失敗にしない(未送信のエピソードは運営が
+	// admin API の sync で送り直せる)。
+	if (tsunaguHosting.configured()) {
 		try {
-			const synced = await tsunaguHosting.createAndPublishEpisode({
-				podcastId: show.tsunaguPodcastId,
-				episodeId: episode.id,
-				title: episode.title,
-				description: episode.notes,
-				audioURL: episode.audioURL
-			});
-			// 同期先のCastopod episode IDを控えておく(後で編集する際の更新先特定に使う)
-			await mutateShow(params.slug, (s) => {
-				const ep = s.episodes.find((e) => e.id === episode.id);
-				if (ep) ep.tsunaguEpisodeId = synced.id;
-				return s;
-			});
+			const linked = await ensureTsunaguPodcast(params.slug);
+			if (linked?.tsunaguPodcastId) await syncEpisode(params.slug, linked.tsunaguPodcastId, episode);
 		} catch (e) {
 			console.error(
 				`[tsunagu-hosting] episode sync failed for show=${params.slug} episode=${episode.id}:`,

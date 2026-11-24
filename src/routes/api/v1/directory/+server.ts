@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { listShowSlugs, getShow } from '$lib/server/store';
+import { publicFeedUrl } from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -23,7 +24,7 @@ export async function GET() {
 					.map((e) => e.pubDate)
 					.sort()
 					.at(-1),
-				feedURL: `https://humming-studio.com/feed/${s.slug}.xml`
+				feedURL: publicFeedUrl(s)
 			}))
 		},
 		{ headers: { 'cache-control': 'public, s-maxage=300' } }
