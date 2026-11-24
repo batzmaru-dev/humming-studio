@@ -30,7 +30,7 @@ export const MAC_PLANS: MacPlan[] = [
 			'番組をいくつでも作成・管理',
 			'テロップのスタイルや動画レイアウトのフル機能'
 		],
-		checkoutUrl: ''
+		checkoutUrl: 'https://buy.stripe.com/7sY8wO8oz6n43ET6ONeZ200'
 	},
 	{
 		id: 'pro',
@@ -43,7 +43,7 @@ export const MAC_PLANS: MacPlan[] = [
 			'クラウド文字起こし(月 360 分)',
 			'AI によるカット候補・トピック抽出・企画支援、生放送の予約'
 		],
-		checkoutUrl: ''
+		checkoutUrl: 'https://buy.stripe.com/3cI7sKeMXfXE6R58WVeZ201'
 	}
 ];
 
