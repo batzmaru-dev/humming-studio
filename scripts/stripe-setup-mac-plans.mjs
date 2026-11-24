@@ -13,15 +13,18 @@
 // (Pro も 1 年分の買い切り。自動更新はしない)。
 const key = process.env.STRIPE_SECRET_KEY ?? '';
 const live = process.argv.includes('--live');
-if (!key.startsWith('sk_')) {
-	console.error('STRIPE_SECRET_KEY を環境変数で渡してください');
+// 通常のシークレットキー(sk_)と、権限を絞った制限付きキー(rk_)のどちらでも動く。
+// 制限付きキーには「商品」「価格」「決済リンク」の書き込み権限が要る。
+const isLiveKey = /^(sk|rk)_live_/.test(key);
+if (!/^(sk|rk)_(live|test)_/.test(key)) {
+	console.error('STRIPE_SECRET_KEY を環境変数で渡してください(sk_ または rk_ で始まるキー)');
 	process.exit(1);
 }
-if (key.startsWith('sk_live_') && !live) {
+if (isLiveKey && !live) {
 	console.error('本番のキーです。本番に作る場合は --live を付けて実行してください');
 	process.exit(1);
 }
-if (!key.startsWith('sk_live_') && live) {
+if (!isLiveKey && live) {
 	console.error('--live が付いていますが、本番のキーではありません');
 	process.exit(1);
 }
