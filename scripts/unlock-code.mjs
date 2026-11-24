@@ -2,11 +2,11 @@
 // 管理 API(/api/v1/admin/unlock-codes)を叩くだけの薄いラッパー。
 //
 // 使い方(ADMIN_TOKEN は .admin-token.local か環境変数から読む):
-//   node scripts/unlock-code.mjs issue unlock "大渕様 2026-11 問い合わせ対応"
+//   node scripts/unlock-code.mjs issue unlock "◯◯様 2026-11 問い合わせ対応"
 //   node scripts/unlock-code.mjs issue pro "◯◯様 請求書 #123 入金確認済み"
 //   node scripts/unlock-code.mjs list
 //   node scripts/unlock-code.mjs revoke 12        # 失効(戻せない)
-//   node scripts/unlock-code.mjs reset 12         # 端末の紐づけを外す(機種変更・故障時)
+//   node scripts/unlock-code.mjs reset 12         # 端末の紐づけを外す(機種変更・故障時。元の端末では使えなくなる)
 //
 // 接続先は既定で本番。別の環境は UNLOCK_API_BASE で指定する。
 // 発行したコードはこの出力でしか見られない(DB にはハッシュしか残らない)。

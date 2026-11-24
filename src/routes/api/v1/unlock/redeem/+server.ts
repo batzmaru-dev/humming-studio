@@ -12,6 +12,7 @@ export const prerender = false;
  *   POST /api/v1/unlock/redeem   { code, deviceId }
  *   → 200 { plan: "unlock" | "pro" }
  *   → 404 コードが存在しない / 409 別の端末で使用済み / 410 失効済み
+ *     (本文に reason: "invalid" | "other_device" | "revoked" を付ける)
  *
  * サインインは必須にしない(買い切りの解放だけならアカウント不要)。
  * Authorization が付いていて有効なら、その sub をコードに紐づける。
@@ -34,13 +35,19 @@ export async function POST({ request }: { request: Request }) {
 	const result = await redeemCode(await unlockDb(), body.code, deviceId, sub);
 	if (result.ok) return json({ plan: result.plan });
 
+	// 断った理由は reason で機械的に読めるようにする。アプリは「失効」「別の端末」と
+	// はっきり分かったときだけ端末側の解放を外す(ステータスだけでは、API が無い環境の
+	// 404 と「コードが違う」の 404 を区別できない)。
 	switch (result.reason) {
 		case 'other_device':
-			throw error(409, 'このコードは別の端末で使用されています');
+			return json(
+				{ message: 'このコードは別の端末で使用されています', reason: 'other_device' },
+				{ status: 409 }
+			);
 		case 'revoked':
-			throw error(410, 'このコードは無効になっています');
+			return json({ message: 'このコードは無効になっています', reason: 'revoked' }, { status: 410 });
 		default:
-			throw error(404, 'コードが正しくありません');
+			return json({ message: 'コードが正しくありません', reason: 'invalid' }, { status: 404 });
 	}
 }
 
