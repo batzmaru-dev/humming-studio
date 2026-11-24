@@ -257,11 +257,9 @@ export const tsunaguHosting = {
 		create.set('created_by', String(c.userId));
 		create.set('updated_by', String(c.userId));
 		create.set('audio_url', params.audioURL);
-		// 文字起こし(WebVTT)は URL 参照で渡す
-		if (params.transcriptURL) {
-			create.set('transcript-choice', 'remote-url');
-			create.set('transcript_remote_url', params.transcriptURL);
-		}
+		// 文字起こし(WebVTT)も Castopod 側が取りに行って実ファイルとして保存する(transcript_url)。
+		// Castopod のフィードは URL 参照(transcript_remote_url)の文字起こしを出力しないため。
+		if (params.transcriptURL) create.set('transcript_url', params.transcriptURL);
 
 		const created = await th<TsunaguEpisode>('/episodes', {
 			method: 'POST',
