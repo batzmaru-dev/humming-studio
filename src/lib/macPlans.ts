@@ -47,5 +47,5 @@ export const MAC_PLANS: MacPlan[] = [
 	}
 ];
 
-/** プライバシーポリシーに記載している窓口と同じ */
-export const MAC_PLANS_CONTACT = 'kawakami@tsunagu-hito.com';
+/** Mac 版の解放コードの購入・問い合わせ窓口(特商法の表記・料金ページ・アプリ内の問い合わせ先で共通) */
+export const MAC_PLANS_CONTACT = 'info@tsunagu-hito.com';
