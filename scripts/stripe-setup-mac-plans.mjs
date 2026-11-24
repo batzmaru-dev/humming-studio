@@ -47,7 +47,7 @@ const PLANS = [
 ];
 
 const CONFIRMATION =
-	'ご購入ありがとうございます。解放コードは、決済時のメールアドレス宛に 3 営業日以内にお送りします。届かない場合は kawakami@tsunagu-hito.com までご連絡ください。';
+	'ご購入ありがとうございます。解放コードは、決済時のメールアドレス宛に 3 営業日以内にお送りします。届かない場合は info@tsunagu-hito.com までご連絡ください。';
 
 /** Stripe の API はフォーム形式。入れ子は a[b][c]=v の形に展開する */
 function encode(obj, prefix = '', out = new URLSearchParams()) {
