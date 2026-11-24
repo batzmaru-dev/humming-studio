@@ -83,6 +83,13 @@ export async function syncPendingEpisodes(
 	const errors: string[] = [];
 	let synced = 0;
 
+	// 掲載をオフにしている番組は送らない(運営の操作でも、利用者の選択を越えない)
+	const current = await getShow(slug);
+	if (!current) throw new Error('show not found');
+	if (!current.radioKeizaiOptIn) {
+		throw new Error('この番組は「ラジオ経済で番組を紹介」がオフのため送信しません');
+	}
+
 	const show = await ensureTsunaguPodcast(slug);
 	if (!show?.tsunaguPodcastId) throw new Error('show not found');
 
