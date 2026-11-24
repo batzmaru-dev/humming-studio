@@ -46,10 +46,15 @@ export interface Show {
 	/** フィードの itunes:owner に載せる連絡先(Spotify 等の所有確認メールが届く) */
 	ownerEmail?: string;
 	radioKeizaiOptIn: boolean;
-	/** つなぐホスティング(Castopod, podcast.radio-keizai.com)側のpodcast ID。運営が手動で番組を作成し、この値を発行する */
+	/** つなぐホスティング(Castopod, podcast.radio-keizai.com)側のpodcast ID。最初の公開時に自動作成して控える */
 	tsunaguPodcastId?: number;
 	/** つなぐホスティング側のhandle(@に続く識別子)。視聴ページ/RSSのURL組み立てに使う */
 	tsunaguPodcastHandle?: string;
+	/**
+	 * フィードの正本を Castopod に切り替えた時刻。これがある番組は /feed/<slug>.xml を
+	 * Castopod のフィードへ 301 転送する。既存エピソードを送り終えてから立てる。
+	 */
+	tsunaguFeedMigratedAt?: string;
 	createdAt: string;
 	episodes: Episode[];
 	/** チームメンバー(オーナー以外の sub)。エピソードの公開・削除ができる */

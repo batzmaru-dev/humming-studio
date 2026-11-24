@@ -1,7 +1,12 @@
 import { json, error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/session';
 import { getShow, mutateShow, canPublish } from '$lib/server/store';
-import { tsunaguListenUrl, tsunaguRssUrl } from '$lib/server/tsunagu-hosting';
+import {
+	publicFeedUrl,
+	tsunaguHosting,
+	tsunaguListenUrl,
+	tsunaguRssUrl
+} from '$lib/server/tsunagu-hosting';
 
 export const prerender = false;
 
@@ -17,7 +22,7 @@ export async function GET({ request, params }) {
 			...show,
 			members: isOwner ? (show.members ?? []) : undefined,
 			role: isOwner ? 'owner' : 'member',
-			feedURL: `https://humming-studio.com/feed/${show.slug}.xml`,
+			feedURL: publicFeedUrl(show),
 			// つなぐホスティングに紐付いている番組のみ、視聴ページ/RSSリンクを返す
 			...(show.tsunaguPodcastHandle
 				? {
@@ -46,18 +51,38 @@ export async function PATCH({ request, params }) {
 			'category',
 			'language',
 			'artworkURL',
-			'ownerEmail',
-			'tsunaguPodcastHandle'
+			'ownerEmail'
 		] as const) {
 			if (typeof body[key] === 'string') s[key] = body[key];
 		}
 		if (typeof body.explicit === 'boolean') s.explicit = body.explicit;
 		if (typeof body.radioKeizaiOptIn === 'boolean') s.radioKeizaiOptIn = body.radioKeizaiOptIn;
-		// つなぐホスティングとの紐付け(運営が発行した番組IDを番組オーナーが登録する)
-		if (typeof body.tsunaguPodcastId === 'number' && Number.isFinite(body.tsunaguPodcastId)) {
-			s.tsunaguPodcastId = body.tsunaguPodcastId;
-		}
+		// つなぐホスティングとの紐付け(tsunaguPodcastId / Handle)はここでは受け付けない。
+		// 番組は公開時に自動作成し、既存番組の紐付けは運営が admin API で行う
+		// (オーナーが任意の ID を入れられると、他人の番組にエピソードを送れてしまう)。
 		return s;
 	});
+
+	// Castopod 側の番組情報も合わせる(ベストエフォート。失敗しても編集自体は成功)
+	if (show?.tsunaguPodcastId && tsunaguHosting.configured()) {
+		const changed = (['title', 'description', 'author'] as const).some(
+			(key) => typeof body[key] === 'string' && body[key] !== existing[key]
+		);
+		if (changed) {
+			try {
+				await tsunaguHosting.updatePodcast({
+					podcastId: show.tsunaguPodcastId,
+					title: show.title,
+					description: show.description,
+					author: show.author
+				});
+			} catch (e) {
+				console.error(
+					`[tsunagu-hosting] podcast update failed for show=${params.slug}:`,
+					e instanceof Error ? e.message : e
+				);
+			}
+		}
+	}
 	return json({ show });
 }
