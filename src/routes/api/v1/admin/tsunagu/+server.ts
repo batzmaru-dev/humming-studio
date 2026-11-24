@@ -36,6 +36,7 @@ export async function GET({ request }: { request: Request }) {
 			slug: s.slug,
 			title: s.title,
 			published: published.length,
+			radioKeizaiOptIn: s.radioKeizaiOptIn,
 			unsynced: published.filter((e) => !e.tsunaguEpisodeId).length,
 			tsunaguPodcastId: s.tsunaguPodcastId ?? null,
 			tsunaguPodcastHandle: s.tsunaguPodcastHandle ?? null,

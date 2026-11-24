@@ -82,11 +82,12 @@ export async function POST({ request, params }) {
 		throw error(404, 'show not found');
 	}
 
-	// 公開先は つなぐホスティング(Castopod)に一本化している。番組がまだ無ければここで作り、
-	// エピソードを送る。Humming Studio 側の保存は上の mutateShow で済んでいるので、
+	// 「ラジオ経済で番組を紹介」(radioKeizaiOptIn)がオンの番組は、公開先を つなぐホスティング
+	// (Castopod / podcast.radio-keizai.com)にする。番組がまだ無ければここで作り、エピソードを送る。
+	// オフの番組は送らない(掲載は番組ごとに選べる。規約第5条)。フィードは従来どおりこちらで配信する。Humming Studio 側の保存は上の mutateShow で済んでいるので、
 	// ここが失敗してもレスポンスは失敗にしない(未送信のエピソードは運営が
 	// admin API の sync で送り直せる)。
-	if (tsunaguHosting.configured()) {
+	if (show.radioKeizaiOptIn && tsunaguHosting.configured()) {
 		try {
 			const linked = await ensureTsunaguPodcast(params.slug);
 			if (linked?.tsunaguPodcastId) await syncEpisode(params.slug, linked.tsunaguPodcastId, episode);
