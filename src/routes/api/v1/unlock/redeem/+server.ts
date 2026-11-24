@@ -10,9 +10,9 @@ export const prerender = false;
  * 解放コードの引き換え・再検証(Mac 直接配布版のアプリが呼ぶ)。
  *
  *   POST /api/v1/unlock/redeem   { code, deviceId }
- *   → 200 { plan: "unlock" | "pro" }
+ *   → 200 { plan: "unlock" | "pro", expiresAt: ISO8601 | null }  (null は無期限)
  *   → 404 コードが存在しない / 409 別の端末で使用済み / 410 失効済み
- *     (本文に reason: "invalid" | "other_device" | "revoked" を付ける)
+ *     (本文に reason: "invalid" | "other_device" | "revoked" | "expired" を付ける)
  *
  * サインインは必須にしない(買い切りの解放だけならアカウント不要)。
  * Authorization が付いていて有効なら、その sub をコードに紐づける。
@@ -33,7 +33,7 @@ export async function POST({ request }: { request: Request }) {
 
 	const sub = await optionalSub(request);
 	const result = await redeemCode(await unlockDb(), body.code, deviceId, sub);
-	if (result.ok) return json({ plan: result.plan });
+	if (result.ok) return json({ plan: result.plan, expiresAt: result.expiresAt });
 
 	// 断った理由は reason で機械的に読めるようにする。アプリは「失効」「別の端末」と
 	// はっきり分かったときだけ端末側の解放を外す(ステータスだけでは、API が無い環境の
@@ -46,6 +46,11 @@ export async function POST({ request }: { request: Request }) {
 			);
 		case 'revoked':
 			return json({ message: 'このコードは無効になっています', reason: 'revoked' }, { status: 410 });
+		case 'expired':
+			return json(
+				{ message: 'このコードは有効期限が切れています', reason: 'expired' },
+				{ status: 410 }
+			);
 		default:
 			return json({ message: 'コードが正しくありません', reason: 'invalid' }, { status: 404 });
 	}
