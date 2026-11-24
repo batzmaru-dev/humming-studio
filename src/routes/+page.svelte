@@ -109,7 +109,9 @@
 	const STORE = 'https://apps.apple.com/jp/app/humming-studio/id6790151668';
 	// Vercel Blob(2GB規模・Whisperモデル同梱のためgit管理外。scripts/prepare-whisper-models.sh
 	// 参照。再アップロード時もパス固定(addRandomSuffix:false)のためURLは変わらない)
-	const MAC = 'https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio.dmg';
+	// 版番号つきの URL を指す(固定 URL の HummingStudio.dmg も同じ中身に置き換えてあるが、
+	// こちらはあとから中身が変わらないので、キャッシュで古い版が配られることがない)
+	const MAC = 'https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio-1.1.3-b121.dmg';
 </script>
 
 <svelte:head>
