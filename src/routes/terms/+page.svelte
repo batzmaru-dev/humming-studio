@@ -109,6 +109,6 @@
 
 		<h2>お問い合わせ</h2>
 		<p>合同会社ツナギビト<br>
-		kawakami@tsunagu-hito.com</p>
+		info@tsunagu-hito.com</p>
 	</article>
 </div>
