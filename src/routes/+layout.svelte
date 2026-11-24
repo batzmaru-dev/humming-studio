@@ -64,6 +64,7 @@
 			<a href="/terms" class="hover:text-surface-200">利用規約</a>
 			<a href="/privacy" class="hover:text-surface-200">プライバシーポリシー</a>
 			<a href="/takedown" class="hover:text-surface-200">削除対応(権利者の方へ)</a>
+			<a href="/tokushoho" class="hover:text-surface-200">特定商取引法に基づく表記</a>
 			<span class="ml-auto">© 2026 tsunagibito LLC</span>
 		</div>
 	</footer>
