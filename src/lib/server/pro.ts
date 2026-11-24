@@ -1,5 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { verifyProSubscription } from './appstore';
+import { hasProGrant } from './unlockCodes';
+import { unlockDb } from './unlockDb';
 
 /**
  * Pro サブスク検証。OK なら null、NG なら理由文字列を返す。
@@ -8,7 +10,29 @@ import { verifyProSubscription } from './appstore';
 export async function checkPro(sub: string, transactionJWS: string | undefined): Promise<string | null> {
 	const freeSubs = (env.AI_FREE_SUBS ?? '').split(',').filter(Boolean);
 	if (freeSubs.includes(sub)) return null;
-	return verifyProSubscription(transactionJWS ?? '');
+	return verifyProOrGrant(sub, transactionJWS);
+}
+
+/**
+ * App Store の Pro サブスク、または解放コード(pro)のどちらかがあれば null。
+ *
+ * Mac の直接配布版は StoreKit で購入できない(サンドボックスにしかつながらない)ため、
+ * 運営が発行した解放コードを sub に紐づけて Pro 扱いにする。詳細は unlockCodes.ts。
+ * 先に JWS を検証するので、App Store で加入している利用者は DB を引かない。
+ */
+export async function verifyProOrGrant(
+	sub: string,
+	transactionJWS: string | undefined
+): Promise<string | null> {
+	const reason = await verifyProSubscription(transactionJWS ?? '');
+	if (!reason) return null;
+	try {
+		if (await hasProGrant(await unlockDb(), sub)) return null;
+	} catch (e) {
+		// コードの照会に失敗しても、元の判定(未加入)を返すだけにする
+		console.error('[pro] unlock grant lookup failed', e);
+	}
+	return reason;
 }
 
 /** 管理者トークン検証(生放送の審査 API を守る)。ADMIN_TOKEN 未設定なら常に false。 */
