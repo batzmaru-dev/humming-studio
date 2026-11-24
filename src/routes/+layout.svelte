@@ -7,10 +7,10 @@
 	// Vercel Web Analytics(訪問数・ページ別・参照元などをダッシュボードで集計)
 	injectAnalytics();
 
-	// トップ & 各媒体専用LP(/candy /keizai)は独自の自前ヘッダー/フッターを使うため、
+	// トップ & 媒体専用LP(/keizai)は独自の自前ヘッダー/フッターを使うため、
 	// 共通のダークなヘッダー/フッターはこれらでは出さない。他ページは従来どおり。
 	const ownChrome = $derived(
-		['/', '/candy', '/keizai'].includes(page.url.pathname)
+		['/', '/keizai'].includes(page.url.pathname)
 	);
 </script>
 

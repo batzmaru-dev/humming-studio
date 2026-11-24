@@ -66,7 +66,7 @@
 		}
 	];
 
-	// 選べる UI デザイン(アプリのテーマ = 提携メディアの世界観)
+	// 選べる UI デザイン(GREEN / CANDY はアプリ独自の配色、KEIZAI は提携メディア「ラジオ経済」の世界観)
 	const themes = [
 		{
 			name: 'GREEN',
@@ -416,7 +416,7 @@
 				{/each}
 			</div>
 			<p class="hs-theme-note">
-				{bd('GREEN は現行のデザイン。CANDY はポップな原宿系ラジオ、KEIZAI は')}
+				{bd('GREEN は現行のデザイン。CANDY はポップでかわいい配色、KEIZAI は')}
 				<a href="https://radio-keizai.com" target="_blank" rel="noopener">ラジオ経済</a>
 				{bd('の世界観をアプリに取り込みました。提携メディアに掲載されると、番組はより多くのリスナーへ届きます。')}
 			</p>
