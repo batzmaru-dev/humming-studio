@@ -185,7 +185,8 @@ export const tsunaguHosting = {
 				form.set('description', params.description.trim() || params.title);
 				form.set('owner_name', params.author || params.title);
 				form.set('owner_email', params.ownerEmail || FALLBACK_OWNER_EMAIL);
-				form.set('publisher', 'Humming Studio');
+				// Castopod は publisher をフィードの itunes:author に出す。番組の発信者名を入れる
+				form.set('publisher', params.author || params.title);
 				form.set('cover', cover, coverFilename(cover));
 				try {
 					return await th<TsunaguPodcast>('/podcasts', {
@@ -218,7 +219,10 @@ export const tsunaguHosting = {
 		if (params.title !== undefined) form.set('title', params.title.slice(0, 128));
 		if (params.description !== undefined && params.description.trim() !== '')
 			form.set('description', params.description);
-		if (params.author !== undefined && params.author !== '') form.set('owner_name', params.author);
+		if (params.author !== undefined && params.author !== '') {
+			form.set('owner_name', params.author);
+			form.set('publisher', params.author);
+		}
 		return th<TsunaguPodcast>(`/podcasts/${params.podcastId}`, { method: 'POST', body: form });
 	},
 
