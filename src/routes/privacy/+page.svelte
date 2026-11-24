@@ -7,7 +7,7 @@
 		class="prose prose-invert prose-headings:text-primary-300 prose-a:text-primary-400 max-w-none"
 	>
 		<h1>Humming Studio プライバシーポリシー</h1>
-		<p class="updated">最終更新日: 2026年7月12日</p>
+		<p class="updated">最終更新日: 2026年11月25日</p>
 		<p>合同会社ツナギビト(以下「当社」)は、アプリケーション「Humming Studio」および関連サービス(以下「本サービス」)における利用者情報の取り扱いについて、以下のとおり定めます。</p>
 		<h2>1. 端末内で完結する処理</h2>
 		<ul>
@@ -37,6 +37,6 @@
 		<p>アカウントを削除すると、ホスティング中のコンテンツ、アカウント情報は 30 日間の猶予期間の後に削除されます。個別のエピソード・番組はアプリ内からいつでも削除できます。</p>
 		<h2>7. お問い合わせ</h2>
 		<p>合同会社ツナギビト<br>
-		kawakami@tsunagu-hito.com</p>
+		info@tsunagu-hito.com</p>
 	</article>
 </div>
