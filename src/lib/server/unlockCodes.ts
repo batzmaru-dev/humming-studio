@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS unlock_codes (
 	last_seen_at timestamptz,
 	revoked_at   timestamptz
 );
+-- 端末リセット時に、それまで使っていた端末を覚えておく(その端末からの再取得を断るため)
+ALTER TABLE unlock_codes ADD COLUMN IF NOT EXISTS blocked_device_id text;
 CREATE INDEX IF NOT EXISTS unlock_codes_sub ON unlock_codes (sub) WHERE sub IS NOT NULL;
 `;
 
@@ -123,6 +125,7 @@ export async function redeemCode(
 		  WHERE code_hash = $1
 		    AND revoked_at IS NULL
 		    AND (device_id IS NULL OR device_id = $2)
+		    AND (blocked_device_id IS NULL OR blocked_device_id <> $2)
 		RETURNING plan`,
 		[hashCode(normalized), deviceId, sub]
 	);
@@ -189,10 +192,21 @@ export async function revokeCode(db: Queryable, id: number): Promise<boolean> {
 	return result.rows.length > 0;
 }
 
-/** 端末の紐づけを外す(機種変更・故障時)。コードはそのまま別の端末で使えるようになる */
+/**
+ * 端末の紐づけを外す(機種変更・故障時)。コードは別の端末で使えるようになる。
+ *
+ * それまで使っていた端末は blocked_device_id に残し、その端末からの再取得は断る。
+ * こうしないと、古い Mac が次に起動したときの再検証で自分に紐づけ直してしまい、
+ * 新しい Mac がまた「別の端末で使用中」になる。
+ * アカウント(sub)の紐づけも外す。pro の判定は sub を見るので、残すと古い側で Pro が続く。
+ */
 export async function resetCodeDevice(db: Queryable, id: number): Promise<boolean> {
 	const result = await db.query(
-		`UPDATE unlock_codes SET device_id = NULL WHERE id = $1 AND revoked_at IS NULL RETURNING id`,
+		`UPDATE unlock_codes
+		    SET blocked_device_id = COALESCE(device_id, blocked_device_id),
+		        device_id = NULL,
+		        sub = NULL
+		  WHERE id = $1 AND revoked_at IS NULL RETURNING id`,
 		[id]
 	);
 	return result.rows.length > 0;
