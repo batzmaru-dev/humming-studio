@@ -12,7 +12,8 @@ import { createHash, randomBytes } from 'node:crypto';
  * - コードは発行時に一度だけ平文で返し、DB には SHA-256 だけを持つ(漏れても使えない)。
  * - 1コード=1端末。同じ端末からの再入力は何度でも通る(再インストール・再検証のため)。
  *   別の端末からは使えない。機種変更は運営が reset して対応する。
- * - plan は 'unlock'(書き出し無制限など)か 'pro'(Unlock+クラウド AI)。
+ * - plan は 'unlock'(書き出し無制限など。買い切りで無期限)か
+ *   'pro'(Unlock+クラウド AI。1 年売り切りで、期限が来たら買い直す)。
  * - pro のクラウド機能はサーバー側で sub を見て判定するので、サインイン済みの端末が
  *   検証に来たときに sub を紐づける(hasProGrant)。
  *
@@ -41,6 +42,9 @@ CREATE TABLE IF NOT EXISTS unlock_codes (
 );
 -- 端末リセット時に、それまで使っていた端末を覚えておく(その端末からの再取得を断るため)
 ALTER TABLE unlock_codes ADD COLUMN IF NOT EXISTS blocked_device_id text;
+-- 有効期間(日)。NULL は無期限(買い切りの unlock)。期限は初回の引き換え時点から数える。
+ALTER TABLE unlock_codes ADD COLUMN IF NOT EXISTS valid_days integer;
+ALTER TABLE unlock_codes ADD COLUMN IF NOT EXISTS expires_at timestamptz;
 CREATE INDEX IF NOT EXISTS unlock_codes_sub ON unlock_codes (sub) WHERE sub IS NOT NULL;
 `;
 
@@ -86,21 +90,37 @@ export interface IssuedCode {
 	code: string;
 	plan: UnlockPlan;
 	note: string;
+	/** 有効期間(日)。null は無期限 */
+	validDays: number | null;
 }
 
-export async function issueCode(db: Queryable, plan: UnlockPlan, note: string): Promise<IssuedCode> {
+/** pro は 1 年売り切り(期限が来たら買い直す)。unlock は買い切りで無期限 */
+export const DEFAULT_VALID_DAYS: Record<UnlockPlan, number | null> = { unlock: null, pro: 365 };
+
+/**
+ * コードを発行する。validDays を省くとプランの既定(pro=365日、unlock=無期限)。
+ * 期限は発行時ではなく、利用者が最初に引き換えた時点から数える
+ * (買ってから入力するまでの日数で損をさせないため)。
+ */
+export async function issueCode(
+	db: Queryable,
+	plan: UnlockPlan,
+	note: string,
+	validDays: number | null | undefined = undefined
+): Promise<IssuedCode> {
+	const days = validDays === undefined ? DEFAULT_VALID_DAYS[plan] : validDays;
 	const normalized = generateCode();
 	const result = await db.query(
-		`INSERT INTO unlock_codes (code_hash, code_hint, plan, note)
-		 VALUES ($1, $2, $3, $4) RETURNING id`,
-		[hashCode(normalized), normalized.slice(-4), plan, note]
+		`INSERT INTO unlock_codes (code_hash, code_hint, plan, note, valid_days)
+		 VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		[hashCode(normalized), normalized.slice(-4), plan, note, days]
 	);
-	return { id: Number(result.rows[0].id), code: formatCode(normalized), plan, note };
+	return { id: Number(result.rows[0].id), code: formatCode(normalized), plan, note, validDays: days };
 }
 
 export type RedeemResult =
-	| { ok: true; plan: UnlockPlan }
-	| { ok: false; reason: 'invalid' | 'revoked' | 'other_device' };
+	| { ok: true; plan: UnlockPlan; expiresAt: string | null }
+	| { ok: false; reason: 'invalid' | 'revoked' | 'other_device' | 'expired' };
 
 /**
  * コードを端末に紐づける(初回)か、紐づけ済みの端末からの再検証を通す。
@@ -121,22 +141,39 @@ export async function redeemCode(
 		    SET device_id    = $2,
 		        redeemed_at  = COALESCE(redeemed_at, now()),
 		        last_seen_at = now(),
-		        sub          = COALESCE($3, sub)
+		        sub          = COALESCE($3, sub),
+		        -- 期限は初回の引き換えで確定させ、以後は動かさない
+		        expires_at   = COALESCE(
+		                         expires_at,
+		                         CASE WHEN valid_days IS NULL THEN NULL
+		                              ELSE now() + make_interval(days => valid_days) END)
 		  WHERE code_hash = $1
 		    AND revoked_at IS NULL
+		    AND (expires_at IS NULL OR expires_at > now())
 		    AND (device_id IS NULL OR device_id = $2)
 		    AND (blocked_device_id IS NULL OR blocked_device_id <> $2)
-		RETURNING plan`,
+		RETURNING plan, expires_at`,
 		[hashCode(normalized), deviceId, sub]
 	);
-	if (updated.rows.length > 0) return { ok: true, plan: updated.rows[0].plan as UnlockPlan };
+	if (updated.rows.length > 0) {
+		const expires = updated.rows[0].expires_at;
+		return {
+			ok: true,
+			plan: updated.rows[0].plan as UnlockPlan,
+			expiresAt: expires ? new Date(expires as string).toISOString() : null
+		};
+	}
 
 	const found = await db.query(
-		`SELECT revoked_at IS NOT NULL AS revoked FROM unlock_codes WHERE code_hash = $1`,
+		`SELECT revoked_at IS NOT NULL AS revoked,
+		        (expires_at IS NOT NULL AND expires_at <= now()) AS expired
+		   FROM unlock_codes WHERE code_hash = $1`,
 		[hashCode(normalized)]
 	);
 	if (found.rows.length === 0) return { ok: false, reason: 'invalid' };
-	return { ok: false, reason: found.rows[0].revoked ? 'revoked' : 'other_device' };
+	if (found.rows[0].revoked) return { ok: false, reason: 'revoked' };
+	if (found.rows[0].expired) return { ok: false, reason: 'expired' };
+	return { ok: false, reason: 'other_device' };
 }
 
 /** この sub に有効な pro コードが紐づいているか(クラウド機能の課金判定用) */
@@ -144,6 +181,7 @@ export async function hasProGrant(db: Queryable, sub: string): Promise<boolean> 
 	const rows = await db.query(
 		`SELECT 1 FROM unlock_codes
 		  WHERE sub = $1 AND plan = 'pro' AND revoked_at IS NULL AND redeemed_at IS NOT NULL
+		    AND (expires_at IS NULL OR expires_at > now())
 		  LIMIT 1`,
 		[sub]
 	);
@@ -160,12 +198,17 @@ export interface CodeSummary {
 	redeemedAt: string | null;
 	lastSeenAt: string | null;
 	revokedAt: string | null;
+	/** 引き換え後に確定する期限。無期限・未引き換えは null */
+	expiresAt: string | null;
+	/** 有効期間(日)。null は無期限 */
+	validDays: number | null;
 	hasAccount: boolean;
 }
 
 export async function listCodes(db: Queryable): Promise<CodeSummary[]> {
 	const result = await db.query(
 		`SELECT id, code_hint, plan, note, created_at, redeemed_at, last_seen_at, revoked_at,
+		        expires_at, valid_days,
 		        sub IS NOT NULL AS has_account
 		   FROM unlock_codes ORDER BY id DESC LIMIT 500`
 	);
@@ -179,6 +222,8 @@ export async function listCodes(db: Queryable): Promise<CodeSummary[]> {
 		redeemedAt: iso(r.redeemed_at),
 		lastSeenAt: iso(r.last_seen_at),
 		revokedAt: iso(r.revoked_at),
+		expiresAt: iso(r.expires_at),
+		validDays: r.valid_days === null || r.valid_days === undefined ? null : Number(r.valid_days),
 		hasAccount: Boolean(r.has_account)
 	}));
 }

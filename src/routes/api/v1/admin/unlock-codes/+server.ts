@@ -11,7 +11,8 @@ export const prerender = false;
  *   GET  /api/v1/admin/unlock-codes
  *        → 発行済みの一覧(コード本体は返さない。末尾4文字と状態だけ)
  *   POST /api/v1/admin/unlock-codes
- *        { action: "issue",  plan: "unlock" | "pro", note: "誰に・なぜ" }
+ *        { action: "issue",  plan: "unlock" | "pro", note: "誰に・なぜ", validDays?: number | null }
+ *          (validDays 省略時: pro は 365 日、unlock は無期限。期限は初回の引き換えから数える)
  *          → { id, code, plan, note }  ※ code はこの応答でしか見られない
  *        { action: "revoke", id }  → 失効(戻せない。必要なら再発行)
  *        { action: "reset",  id }  → 端末の紐づけを外す(機種変更・故障時)
@@ -28,6 +29,7 @@ export async function POST({ request }: { request: Request }) {
 		plan?: unknown;
 		note?: unknown;
 		id?: unknown;
+		validDays?: unknown;
 	} | null;
 	if (!body) throw error(400, 'invalid body');
 	const db = await unlockDb();
@@ -37,7 +39,15 @@ export async function POST({ request }: { request: Request }) {
 		const note = typeof body.note === 'string' ? body.note.trim().slice(0, 200) : '';
 		// 誰に渡したコードか分からなくなると失効も問い合わせ対応もできないので必須にする
 		if (!note) throw error(400, 'note is required (誰に・なぜ発行したか)');
-		return json(await issueCode(db, body.plan, note));
+		// validDays: 省略=プランの既定(pro 365日・unlock 無期限)/ null=無期限 / 数値=その日数
+		let validDays: number | null | undefined = undefined;
+		if (body.validDays === null) validDays = null;
+		else if (body.validDays !== undefined) {
+			const days = Number(body.validDays);
+			if (!Number.isInteger(days) || days < 1 || days > 3660) throw error(400, 'validDays must be 1..3660');
+			validDays = days;
+		}
+		return json(await issueCode(db, body.plan, note, validDays));
 	}
 
 	if (body.action === 'revoke' || body.action === 'reset') {
