@@ -55,7 +55,6 @@ export async function syncEpisode(slug: string, podcastId: number, episode: Epis
 		title: episode.title,
 		description: episode.notes,
 		audioURL: episode.audioURL,
-		mimeType: episode.mimeType,
 		transcriptURL: episode.transcriptURL,
 		pubDate: episode.pubDate
 	});

@@ -38,7 +38,7 @@ export class TsunaguHostingError extends Error {
 
 async function th<T>(
 	path: string,
-	init: { method: string; body?: FormData; timeoutMs?: number }
+	init: { method: string; body?: FormData | URLSearchParams; timeoutMs?: number }
 ): Promise<T> {
 	const c = cfg();
 	if (!c) {
@@ -133,10 +133,6 @@ function coverFilename(blob: Blob): string {
 	return blob.type === 'image/png' ? 'cover.png' : 'cover.jpg';
 }
 
-function audioFilename(mimeType: string): string {
-	return mimeType === 'audio/mpeg' || mimeType === 'audio/mp3' ? 'episode.mp3' : 'episode.m4a';
-}
-
 /** Castopod の scheduled_publication_date 用(Y-m-d H:i、UTC) */
 function castopodDate(iso: string): string {
 	return new Date(iso).toISOString().slice(0, 16).replace('T', ' ');
@@ -227,10 +223,15 @@ export const tsunaguHosting = {
 	},
 
 	/**
-	 * エピソードを作成して即座に公開する(Castopod REST APIは create → publish の2段階)。
-	 * audioURL(Vercel Blobの公開URL)を取得してmultipartで転送する。
-	 * slug には Humming Studio 側のエピソードUUIDをそのまま使う(一意性が保証済み、
-	 * かつCastopodのslugバリデーション `[a-zA-Z0-9\-]{1,128}` を満たす)。
+	 * エピソードを作成して公開する(Castopod REST API は create → publish の2段階)。
+	 *
+	 * 音声は Castopod 側が audioURL(Vercel Blob の公開 URL)へ直接取りに行く(audio_url。
+	 * 2026-11-25 に Castopod へ追加)。この関数を経由して転送しないので、大きな音声でも
+	 * こちらのメモリ・実行時間に乗らない。
+	 * slug と guid には Humming Studio 側のエピソード UUID を使う。guid を揃えておくと、
+	 * フィードを Castopod へ切り替えたときに購読アプリが同じ回として扱う(新着の重複を防ぐ)。
+	 * ファイルを添付しないので application/x-www-form-urlencoded で送る
+	 * (multipart で日本語の説明文を送ると URL 系の項目を読み落とす既知の不具合を避ける)。
 	 */
 	createAndPublishEpisode: async (params: {
 		podcastId: number;
@@ -238,7 +239,6 @@ export const tsunaguHosting = {
 		title: string;
 		description: string;
 		audioURL: string;
-		mimeType?: string;
 		transcriptURL?: string;
 		/** 元の公開日時(ISO8601)。過去のエピソードを移すとき、公開日を保つために渡す */
 		pubDate?: string;
@@ -246,49 +246,62 @@ export const tsunaguHosting = {
 		const c = cfg();
 		if (!c) throw new Error('つなぐホスティングが未設定です');
 
-		const audioBlob = await fetchBlob(params.audioURL, 240_000);
-
-		const createForm = new FormData();
-		createForm.set('title', params.title);
-		createForm.set('slug', params.episodeId);
-		createForm.set('podcast_id', String(params.podcastId));
+		const create = new URLSearchParams();
+		create.set('title', params.title);
+		create.set('slug', params.episodeId);
+		create.set('guid', params.episodeId);
+		create.set('podcast_id', String(params.podcastId));
 		// Castopod は description が無いと 500 になる
-		createForm.set('description', params.description.trim() || params.title);
-		createForm.set('type', 'full');
-		createForm.set('created_by', String(c.userId));
-		createForm.set('updated_by', String(c.userId));
-		createForm.set('audio_file', audioBlob, audioFilename(params.mimeType ?? audioBlob.type));
-
-		// 文字起こし(WebVTT)は任意。取れなければ付けずに進める(公開そのものは止めない)
+		create.set('description', params.description.trim() || params.title);
+		create.set('type', 'full');
+		create.set('created_by', String(c.userId));
+		create.set('updated_by', String(c.userId));
+		create.set('audio_url', params.audioURL);
+		// 文字起こし(WebVTT)は URL 参照で渡す
 		if (params.transcriptURL) {
-			try {
-				const transcript = await fetchBlob(params.transcriptURL);
-				createForm.set('transcript-choice', 'upload-file');
-				createForm.set('transcript_file', transcript, 'transcript.vtt');
-			} catch (e) {
-				console.error('[tsunagu-hosting] transcript fetch failed:', e instanceof Error ? e.message : e);
-			}
+			create.set('transcript-choice', 'remote-url');
+			create.set('transcript_remote_url', params.transcriptURL);
 		}
 
 		const created = await th<TsunaguEpisode>('/episodes', {
 			method: 'POST',
-			body: createForm,
+			body: create,
 			timeoutMs: 280_000
 		});
 
-		const publishForm = new FormData();
-		publishForm.set('created_by', String(c.userId));
+		const publish = new URLSearchParams();
+		publish.set('created_by', String(c.userId));
 		// 10分以上前の公開日時は、その日時で公開する(過去日時の schedule は即時公開扱いになる)
 		const backdated =
 			params.pubDate && Date.now() - new Date(params.pubDate).getTime() > 10 * 60_000;
 		if (backdated) {
-			publishForm.set('publication_method', 'schedule');
-			publishForm.set('scheduled_publication_date', castopodDate(params.pubDate!));
-			publishForm.set('client_timezone', 'UTC');
+			publish.set('publication_method', 'schedule');
+			publish.set('scheduled_publication_date', castopodDate(params.pubDate!));
+			publish.set('client_timezone', 'UTC');
 		} else {
-			publishForm.set('publication_method', 'now');
+			publish.set('publication_method', 'now');
 		}
-		return th<TsunaguEpisode>(`/episodes/${created.id}/publish`, { method: 'POST', body: publishForm });
+		return th<TsunaguEpisode>(`/episodes/${created.id}/publish`, { method: 'POST', body: publish });
+	},
+
+	/**
+	 * エピソードを Castopod から消す(非公開化+削除。2026-11-25 に Castopod へ追加)。
+	 * 取り違え防止のため、Castopod 側は slug(= Humming Studio のエピソード UUID)の一致を確かめる。
+	 * 既に無い(404)場合は成功として扱う。
+	 */
+	deleteEpisode: async (params: { tsunaguEpisodeId: number; episodeId: string }): Promise<void> => {
+		const body = new URLSearchParams();
+		body.set('slug', params.episodeId);
+		try {
+			await th<unknown>(`/episodes/${params.tsunaguEpisodeId}/delete`, {
+				method: 'POST',
+				body,
+				timeoutMs: 120_000
+			});
+		} catch (e) {
+			if (e instanceof TsunaguHostingError && e.status === 404) return;
+			throw e;
+		}
 	},
 
 	/**

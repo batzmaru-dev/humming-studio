@@ -71,6 +71,23 @@ export async function DELETE({ request, params }) {
 	if (!removed) throw error(404, 'episode not found');
 	const episode = removed;
 
+	// つなぐホスティング(Castopod)に送ってある回は、そちらからも消す。
+	// 失敗してもこちらの削除は成功として返すが、Castopod のフィードには残るのでログに出す
+	// (運営が Castopod の管理画面から消す)。
+	if (episode.tsunaguEpisodeId && tsunaguHosting.configured()) {
+		try {
+			await tsunaguHosting.deleteEpisode({
+				tsunaguEpisodeId: episode.tsunaguEpisodeId,
+				episodeId: episode.id
+			});
+		} catch (e) {
+			console.error(
+				`[tsunagu-hosting] episode delete failed for show=${params.slug} episode=${episode.id} tsunaguEpisodeId=${episode.tsunaguEpisodeId}:`,
+				e instanceof Error ? e.message : e
+			);
+		}
+	}
+
 	// RSS インポート由来のエピソードは外部音源参照なので、ストレージ計上も Blob 削除もしない。
 	// 計上先は公開時と同じく番組オーナー
 	if (!episode.external) {
