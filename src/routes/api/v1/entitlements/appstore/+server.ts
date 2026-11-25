@@ -15,6 +15,7 @@ export const prerender = false;
  * アプリは「現在の権利(Transaction.currentEntitlements)」の JWS をまとめて送る。
  * Apple の署名を検証できたものだけを登録するので、クライアントの申告は信用していない。
  * 1 つの購入は 1 アカウントにしか紐づかない。別のアカウントに登録済みなら skipped に入る。
+ * サンドボックス環境の購入は登録しない(skipped に reason: "sandbox")。
  */
 export async function POST({ request }: { request: Request }) {
 	const sub = await requireAuth(request);
@@ -41,6 +42,13 @@ export async function POST({ request }: { request: Request }) {
 		}
 		if (!purchase) {
 			skipped.push({ reason: 'not_a_product' });
+			continue;
+		}
+		// サンドボックスの購入(TestFlight・審査・直接配布の Mac 版)は実際の支払いが無いので、
+		// アカウントには登録しない。登録すると、無料のテスト購入で全端末が Pro になってしまう。
+		// その端末の中では従来どおり StoreKit の判定で Pro として動く。
+		if (purchase.environment !== 'Production') {
+			skipped.push({ reason: 'sandbox' });
 			continue;
 		}
 		const result = await upsertEntitlement(db, {
