@@ -56,14 +56,14 @@ export const MAC_PLANS: MacPlan[] = [
  * false のあいだは、料金ページにも特商法の表記にも月額を出さない。
  */
 export const MAC_MONTHLY = {
-	enabled: false,
+	enabled: true,
 	name: 'Humming Studio Pro 月額',
 	price: '600円',
 	term: '1 か月ごとに自動更新(いつでも解約できます)',
-	summary: 'Pro を月ごとに。同じアカウントの iPhone・iPad でも Pro になります。',
+	summary: 'Pro を月ごとに。サインインしたアカウントに付くので、Mac を買い替えても引き継げます。',
 	features: [
 		'Pro の機能をすべて含む(Unlock の機能+クラウドの AI 機能)',
-		'同じ Apple アカウントでサインインした iPhone・iPad でも使える',
+		'同じアカウントでサインインした Mac で使える(iPhone・iPad との共有は、iPhone 版の次回アップデートで対応予定)',
 		'解約はアプリのマイページからいつでも'
 	]
 };
