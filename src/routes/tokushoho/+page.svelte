@@ -11,7 +11,7 @@
 		class="prose prose-invert prose-headings:text-primary-300 prose-a:text-primary-400 max-w-none"
 	>
 		<h1>特定商取引法に基づく表記</h1>
-		<p class="updated">最終更新日: 2026年11月24日</p>
+		<p class="updated">最終更新日: 2026年11月25日</p>
 		<p>
 			当社ウェブサイトで販売する、Mac 版 Humming Studio の解放コードについての表記です。iPhone・iPad
 			版のアプリ内課金は Apple の App Store を通じた販売となり、本表記の対象外です。

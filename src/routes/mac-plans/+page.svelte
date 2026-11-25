@@ -114,8 +114,8 @@
 				</li>
 				<li>
 					iPhone・iPad 版は、これまでどおり App Store からご購入いただけます。App Store で契約した
-					Pro は、同じ Apple アカウントでサインインした Mac 版でも有効になります(解放コードは Mac
-					1 台ごとで、他の端末には引き継がれません)。
+					Pro を Mac 版でも使えるようにする対応は、iPhone 版の次回アップデートで行う予定です(解放コードは
+					Mac 1 台ごとで、他の端末には引き継がれません)。
 				</li>
 			{:else}
 				<li>iPhone・iPad 版は、これまでどおり App Store からご購入いただけます。App Store での購入は Mac 版には引き継がれません。</li>

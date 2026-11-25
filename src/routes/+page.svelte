@@ -111,7 +111,7 @@
 	// 参照。再アップロード時もパス固定(addRandomSuffix:false)のためURLは変わらない)
 	// 版番号つきの URL を指す(固定 URL の HummingStudio.dmg も同じ中身に置き換えてあるが、
 	// こちらはあとから中身が変わらないので、キャッシュで古い版が配られることがない)
-	const MAC = 'https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio-1.1.4-b122.dmg';
+	const MAC = 'https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio-1.1.5-b124.dmg';
 </script>
 
 <svelte:head>

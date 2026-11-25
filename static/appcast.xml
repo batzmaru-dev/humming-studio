@@ -6,6 +6,28 @@
     <description>Humming Studio (Mac版) アップデート情報</description>
     <language>ja</language>
     <item>
+      <title>1.1.5 (124)</title>
+      <description><![CDATA[
+        <h3>バージョン 1.1.2 以前をお使いの方へ</h3>
+        <p><b>このアップデートは、アプリ内からはインストールできません</b>(1.1.2 以前の不具合で、ダウンロード後に失敗します)。お手数ですが <a href="https://humming-studio.com/">humming-studio.com</a> の「Mac 版をダウンロード」から新しい版を入手し、「アプリケーション」フォルダの HummingStudio を置き換えてください。収録・編集済みのデータはそのまま残ります。1.1.3 以降は、アプリ内からアップデートできます。</p>
+        <h3>1.1.5 の変更</h3>
+        <ul>
+          <li>Pro を月額(600円・税込)で申し込めるようになりました(マイページ →「Pro を月額で申し込む」)。解約や支払い方法の変更は、マイページの「契約を管理」から行えます</li>
+          <li>月額の Pro は、サインインしたアカウントに付きます(iPhone・iPad との共有は、iPhone 版の次回アップデートで対応予定)</li>
+          <li>1年分の解放コードは、これまでどおり使えます</li>
+        </ul>
+      ]]></description>
+      <pubDate>Wed, 25 Nov 2026 15:50:00 +0900</pubDate>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://iprukt1z2pyeb6bl.public.blob.vercel-storage.com/HummingStudio-1.1.5-b124.dmg"
+        sparkle:version="124"
+        sparkle:shortVersionString="1.1.5"
+        length="1969844747"
+        type="application/octet-stream"
+        sparkle:edSignature="Ppy/8cH5cw7V0r3VeeuR5Os2rWqRwY68zUTZvB/SaWihDuu8ZSAhh/DRNB1101mDS2hC7axo/0WM1AsSnsSXBQ==" />
+    </item>
+    <item>
       <title>1.1.4 (122)</title>
       <description><![CDATA[
         <h3>バージョン 1.1.2 以前をお使いの方へ</h3>
