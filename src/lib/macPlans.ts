@@ -47,5 +47,26 @@ export const MAC_PLANS: MacPlan[] = [
 	}
 ];
 
+/**
+ * Pro 月額(Stripe の定期課金)。解放コードとは別の仕組みで、アプリにサインインした
+ * アカウントに付く。申込みはアプリのマイページから始める(誰の契約かをサーバーが
+ * 知る必要があるので、このページからは直接買えない)。
+ *
+ * enabled は、Stripe の本番の設定(価格・Webhook・環境変数)が済んでから true にする。
+ * false のあいだは、料金ページにも特商法の表記にも月額を出さない。
+ */
+export const MAC_MONTHLY = {
+	enabled: false,
+	name: 'Humming Studio Pro 月額',
+	price: '600円',
+	term: '1 か月ごとに自動更新(いつでも解約できます)',
+	summary: 'Pro を月ごとに。同じアカウントの iPhone・iPad でも Pro になります。',
+	features: [
+		'Pro の機能をすべて含む(Unlock の機能+クラウドの AI 機能)',
+		'同じ Apple アカウントでサインインした iPhone・iPad でも使える',
+		'解約はアプリのマイページからいつでも'
+	]
+};
+
 /** Mac 版の解放コードの購入・問い合わせ窓口(特商法の表記・料金ページ・アプリ内の問い合わせ先で共通) */
 export const MAC_PLANS_CONTACT = 'info@tsunagu-hito.com';

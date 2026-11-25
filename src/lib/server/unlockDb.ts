@@ -1,6 +1,7 @@
 import { Pool } from '@neondatabase/serverless';
 import { env } from '$env/dynamic/private';
 import { ensureUnlockSchema, type Queryable } from './unlockCodes';
+import { ensureEntitlementSchema } from './entitlements';
 
 // 解放コード用の DB 接続。store.ts の pool は外へ出していないので、ここで別に持つ。
 // テーブルは初回アクセス時に作る(CREATE TABLE IF NOT EXISTS なので何度流しても同じ)。
@@ -21,7 +22,10 @@ export async function unlockDb(): Promise<Queryable> {
 		}
 	};
 	if (!_ready) {
-		_ready = ensureUnlockSchema(db).catch((e) => {
+		// アカウント単位の権利(entitlements)も同じ接続で用意する
+		_ready = ensureUnlockSchema(db)
+			.then(() => ensureEntitlementSchema(db))
+			.catch((e) => {
 			_ready = null; // 次のリクエストでやり直せるようにする
 			throw e;
 		});

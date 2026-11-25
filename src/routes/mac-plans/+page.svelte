@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MAC_PLANS, MAC_PLANS_CONTACT } from '$lib/macPlans';
+	import { MAC_MONTHLY, MAC_PLANS, MAC_PLANS_CONTACT } from '$lib/macPlans';
 
 	const mailto = `mailto:${MAC_PLANS_CONTACT}?subject=${encodeURIComponent('Humming Studio 解放コードについて')}`;
 </script>
@@ -64,6 +64,32 @@
 		{/each}
 	</div>
 
+	{#if MAC_MONTHLY.enabled}
+		<section
+			class="not-prose mt-5 rounded-2xl border border-primary-500/50 bg-surface-900/60 p-6"
+			aria-labelledby="plan-monthly"
+		>
+			<h2 id="plan-monthly" class="text-lg font-bold text-surface-50">{MAC_MONTHLY.name}</h2>
+			<p class="mt-1 text-sm text-surface-300">{MAC_MONTHLY.summary}</p>
+			<p class="mt-5 text-3xl font-bold text-surface-50">
+				{MAC_MONTHLY.price}<span class="ml-1 text-sm font-normal text-surface-300">(税込)/ 月</span>
+			</p>
+			<p class="mt-1 text-sm text-surface-300">{MAC_MONTHLY.term}</p>
+			<ul class="mt-5 space-y-2 text-sm text-surface-200">
+				{#each MAC_MONTHLY.features as feature}
+					<li class="flex gap-2">
+						<span class="text-primary-400" aria-hidden="true">✓</span>
+						<span>{feature}</span>
+					</li>
+				{/each}
+			</ul>
+			<p class="mt-6 rounded-xl border border-surface-700 px-4 py-3 text-sm text-surface-200">
+				月額のお申込みは、<strong>アプリの中から</strong>始めます。アプリ右上のマイページで Apple
+				アカウントにサインインし、「Pro を月額で申し込む」を押すと、決済ページが開きます。
+			</p>
+		</section>
+	{/if}
+
 	<article
 		class="prose prose-invert prose-headings:text-primary-300 prose-a:text-primary-400 mt-12 max-w-none"
 	>
@@ -81,7 +107,19 @@
 			<li>解放コードは <strong>1 つにつき Mac 1 台</strong>で使えます。Mac を買い替えたときは、移し替えますのでお問い合わせください。</li>
 			<li>Pro は、コードを有効にした日から 1 年間です。自動では更新されません。続けて使う場合は、新しいコードを購入して入力してください。</li>
 			<li>Pro のクラウド機能を使うには、アプリで Apple アカウントにサインインしている必要があります。</li>
-			<li>iPhone・iPad 版は、これまでどおり App Store からご購入いただけます。App Store での購入は Mac 版には引き継がれません。</li>
+			{#if MAC_MONTHLY.enabled}
+				<li>
+					Pro 月額は、解放コードを使いません。申込みから数分で、サインイン中のアカウントが Pro
+					になります。解約すると、支払い済みの期間の終わりまで使えます。
+				</li>
+				<li>
+					iPhone・iPad 版は、これまでどおり App Store からご購入いただけます。App Store で契約した
+					Pro は、同じ Apple アカウントでサインインした Mac 版でも有効になります(解放コードは Mac
+					1 台ごとで、他の端末には引き継がれません)。
+				</li>
+			{:else}
+				<li>iPhone・iPad 版は、これまでどおり App Store からご購入いただけます。App Store での購入は Mac 版には引き継がれません。</li>
+			{/if}
 		</ul>
 
 		<p>
