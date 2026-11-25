@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { verifyProSubscription } from './appstore';
+import { hasAccountPro } from './entitlements';
 import { hasProGrant } from './unlockCodes';
 import { unlockDb } from './unlockDb';
 
@@ -14,7 +15,10 @@ export async function checkPro(sub: string, transactionJWS: string | undefined):
 }
 
 /**
- * App Store の Pro サブスク、または解放コード(pro)のどちらかがあれば null。
+ * App Store の Pro サブスク、アカウントに紐づいた Pro、解放コード(pro)のどれかがあれば null。
+ *
+ * アカウントに紐づいた Pro は entitlements.ts を参照(iPhone で契約して Mac で使う、
+ * Mac で Stripe の月額を契約して iPhone で使う、の両方をここで通す)。
  *
  * Mac の直接配布版は StoreKit で購入できない(サンドボックスにしかつながらない)ため、
  * 運営が発行した解放コードを sub に紐づけて Pro 扱いにする。詳細は unlockCodes.ts。
@@ -27,7 +31,10 @@ export async function verifyProOrGrant(
 	const reason = await verifyProSubscription(transactionJWS ?? '');
 	if (!reason) return null;
 	try {
-		if (await hasProGrant(await unlockDb(), sub)) return null;
+		const db = await unlockDb();
+		// アカウントに紐づいた Pro(別の端末での App Store 購入、Mac の Stripe 月額)
+		if (await hasAccountPro(db, sub)) return null;
+		if (await hasProGrant(db, sub)) return null;
 	} catch (e) {
 		// コードの照会に失敗しても、元の判定(未加入)を返すだけにする
 		console.error('[pro] unlock grant lookup failed', e);

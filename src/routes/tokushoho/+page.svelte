@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MAC_PLANS, MAC_PLANS_CONTACT } from '$lib/macPlans';
+	import { MAC_MONTHLY, MAC_PLANS, MAC_PLANS_CONTACT } from '$lib/macPlans';
 </script>
 
 <svelte:head>
@@ -45,6 +45,9 @@
 						{#each MAC_PLANS as plan}
 							{plan.name}: {plan.price}(税込)<br />
 						{/each}
+						{#if MAC_MONTHLY.enabled}
+							{MAC_MONTHLY.name}: {MAC_MONTHLY.price}(税込)/ 月<br />
+						{/if}
 						最新の価格は<a href="/mac-plans">料金と購入方法</a>のページに表示します。
 					</td>
 				</tr>
@@ -58,11 +61,21 @@
 				</tr>
 				<tr>
 					<th scope="row" class="w-28 align-top sm:w-48 sm:whitespace-nowrap">支払時期</th>
-					<td>ご注文時に決済が確定します。</td>
+					<td>
+						ご注文時に決済が確定します。
+						{#if MAC_MONTHLY.enabled}
+							<br />Pro 月額は、お申込み時に最初の 1 か月分を決済し、以後は 1 か月ごとの更新日に自動で決済します。
+						{/if}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row" class="w-28 align-top sm:w-48 sm:whitespace-nowrap">商品の引渡時期</th>
-					<td>決済の確認後、3 営業日以内に、決済時のメールアドレス宛に解放コードを送信します。</td>
+					<td>
+						決済の確認後、3 営業日以内に、決済時のメールアドレス宛に解放コードを送信します。
+						{#if MAC_MONTHLY.enabled}
+							<br />Pro 月額は、決済の完了後すぐに、お申込み時にサインインしていたアカウントでご利用いただけます。
+						{/if}
+					</td>
 				</tr>
 				<tr>
 					<th scope="row" class="w-28 align-top sm:w-48 sm:whitespace-nowrap">返品・キャンセル</th>
@@ -76,6 +89,9 @@
 					<td>
 						Unlock は買い切りで、期限はありません。<br />
 						Pro は、解放コードを有効にした日から 1 年間有効です。自動では更新されず、追加の請求は発生しません。
+						{#if MAC_MONTHLY.enabled}
+							<br />Pro 月額は、解約するまで 1 か月ごとに自動で更新されます。解約は、アプリのマイページの「契約を管理」からいつでも行えます。次回の更新日より前に解約すれば、以後の請求は発生しません。解約後も、支払い済みの期間の終わりまでご利用いただけます。日割りでの返金は行いません。
+						{/if}
 					</td>
 				</tr>
 				<tr>

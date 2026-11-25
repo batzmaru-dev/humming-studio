@@ -6,10 +6,11 @@ import { compactVerify, decodeProtectedHeader, importX509 } from 'jose';
 // これにより「Pro サブスクを持っている」ことをクライアント申告なしに確認できる。
 
 const BUNDLE_ID = 'com.tsunagibito.PodBlock';
-const PRO_PRODUCT_ID = 'com.tsunagibito.PodBlock.pro.monthly';
+const PRO_PRODUCT_IDS = ['com.tsunagibito.PodBlock.pro.monthly', 'com.tsunagibito.PodBlock.pro.annual'];
+const UNLOCK_PRODUCT_ID = 'com.tsunagibito.PodBlock.unlock';
 const APPLE_ROOT_URL = 'https://www.apple.com/certificateauthority/AppleRootCA-G3.cer';
 
-interface TransactionPayload {
+export interface TransactionPayload {
 	bundleId: string;
 	productId: string;
 	expiresDate?: number; // ms
@@ -69,8 +70,53 @@ export async function verifyProSubscription(jws: string): Promise<string | null>
 		return e instanceof Error ? e.message : 'invalid transaction';
 	}
 	if (tx.bundleId !== BUNDLE_ID) return 'bundleId mismatch';
-	if (tx.productId !== PRO_PRODUCT_ID) return 'not a Pro subscription';
+	if (!PRO_PRODUCT_IDS.includes(tx.productId)) return 'not a Pro subscription';
 	if (tx.revocationDate) return 'subscription revoked';
 	if (!tx.expiresDate || tx.expiresDate < Date.now()) return 'subscription expired';
 	return null;
+}
+
+export interface AppStorePurchase {
+	plan: 'pro' | 'unlock';
+	originalTransactionId: string;
+	/** Pro は更新期限。Unlock(買い切り)は null */
+	expiresAt: Date | null;
+	/** 返金・取り消しされていればその時刻 */
+	revokedAt: Date | null;
+	environment: 'Sandbox' | 'Production';
+}
+
+/**
+ * 検証済みのトランザクションを、アカウントに登録できる形に読み替える。
+ * このアプリの商品でなければ null(理由は呼び出し側で 400 にする)。
+ */
+export function classifyTransaction(tx: TransactionPayload): AppStorePurchase | null {
+	if (tx.bundleId !== BUNDLE_ID) return null;
+	const revokedAt = tx.revocationDate ? new Date(tx.revocationDate) : null;
+	const base = { originalTransactionId: tx.originalTransactionId, revokedAt, environment: tx.environment };
+	if (PRO_PRODUCT_IDS.includes(tx.productId)) {
+		if (!tx.expiresDate) return null;
+		return { ...base, plan: 'pro', expiresAt: new Date(tx.expiresDate) };
+	}
+	if (tx.productId === UNLOCK_PRODUCT_ID) return { ...base, plan: 'unlock', expiresAt: null };
+	return null;
+}
+
+/**
+ * App Store サーバー通知 V2 の signedPayload を検証して中身を返す。
+ * 署名の形式はトランザクションの JWS と同じ(x5c を Apple Root CA まで辿る)。
+ */
+export async function verifyNotification(signedPayload: string): Promise<{
+	notificationType: string;
+	subtype?: string;
+	transaction: TransactionPayload | null;
+}> {
+	const outer = (await verifyTransactionJWS(signedPayload)) as unknown as {
+		notificationType: string;
+		subtype?: string;
+		data?: { bundleId?: string; signedTransactionInfo?: string };
+	};
+	const signed = outer.data?.signedTransactionInfo;
+	const transaction = signed ? await verifyTransactionJWS(signed) : null;
+	return { notificationType: outer.notificationType, subtype: outer.subtype, transaction };
 }
